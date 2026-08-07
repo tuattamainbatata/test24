@@ -14,7 +14,10 @@ Requires: pip install -r requirements.txt
 """
 
 import pandas as pd
-import pandas_ta as ta
+try:
+    import pandas_ta as ta
+except ImportError:
+    import pandas_ta_classic as ta  # maintained fork; same API, supports newer Python/pandas
 import yfinance as yf
 from tabulate import tabulate
 from datetime import datetime
@@ -56,13 +59,12 @@ def calculate_indicators(df):
     df["ema_50"] = ta.ema(df["close"], length=50)
     df["ema_200"] = ta.ema(df["close"], length=200)
 
-    # Supertrend (10, 3)
+    # Supertrend (10, 3). Green/uptrend is derived from price vs. the trend line
+    # rather than the library's direction-sign column, since that sign convention
+    # differs between pandas_ta (-1=up) and its pandas_ta_classic fork (+1=up).
     st = ta.supertrend(df["high"], df["low"], df["close"], length=10, multiplier=3)
     df = pd.concat([df, st], axis=1)
-    dir_col = next(c for c in st.columns if c.startswith("SUPERTd_"))
     val_col = next(c for c in st.columns if c.startswith("SUPERT_") and not c.startswith(("SUPERTd_", "SUPERTl_", "SUPERTs_")))
-    # pandas_ta convention: -1 = uptrend (green), 1 = downtrend (red)
-    df["st_dir"] = df[dir_col]
     df["st_value"] = df[val_col]
 
     # ROC (Rate of Change) - PRD core
@@ -108,7 +110,7 @@ def analyze_stock(ticker, df_stock, df_nifty, df_sector):
 
     # Star 1: Trend Alignment
     trend_up = (last["close"] > last["ema_50"]) and (last["ema_50"] > last["ema_200"])
-    st_green = last["st_dir"] == -1
+    st_green = last["close"] > last["st_value"]
     stars["1_Trend"] = bool(trend_up and st_green)
 
     # Star 2: PRD Momentum (ROC acceleration)

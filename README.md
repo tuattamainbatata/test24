@@ -35,3 +35,8 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full
 documentation.
+
+## Other Projects
+
+- [`malkan-7star-prd/`](malkan-7star-prd/) — Vishal Malkan "7-Star PRD" stock screening
+  framework (Python scanner, TradingView Pine Script, and spreadsheet formulas).

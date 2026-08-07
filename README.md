@@ -28,6 +28,18 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 3. Set the model to `auto` to let OmniRoute route requests across providers with intelligent
    fallback and cost optimization.
 
+## NVIDIA API streaming example
+
+`scripts/nvidia_streaming.py` shows how to stream a chat completion from
+NVIDIA's OpenAI-compatible endpoint (`https://integrate.api.nvidia.com/v1`)
+using the `openai` Python client.
+
+```bash
+pip install -r scripts/requirements.txt
+export NVIDIA_API_KEY="nvapi-..."   # get one from https://build.nvidia.com
+python scripts/nvidia_streaming.py "your prompt here"
+```
+
 ## Alternatives
 
 - **Global CLI**: `npm install -g omniroute && omniroute`

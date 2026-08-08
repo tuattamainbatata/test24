@@ -28,6 +28,22 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 3. Set the model to `auto` to let OmniRoute route requests across providers with intelligent
    fallback and cost optimization.
 
+## Configuration
+
+The dashboard generates a gateway API key that your IDE/tools use to authenticate to the
+local OmniRoute endpoint. Keep it out of source control:
+
+1. Copy `.env.example` to `.env` and paste the generated key into `OMNIROUTE_API_KEY`.
+   `.env` is gitignored, so the real key never gets committed.
+2. Point your tool at OmniRoute using the values from `.env`:
+   - **Base URL**: `OMNIROUTE_BASE_URL` (`http://localhost:20128/v1`)
+   - **API key**: `OMNIROUTE_API_KEY`
+
+   For example, with Claude Code, set `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY` (or your
+   tool's equivalent env vars) to these values before launching it.
+3. If a key is ever exposed (e.g. pasted somewhere public), regenerate it from the OmniRoute
+   dashboard and update your local `.env`.
+
 ## Alternatives
 
 - **Global CLI**: `npm install -g omniroute && omniroute`

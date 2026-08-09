@@ -7,16 +7,16 @@ OpenAI-compatible endpoint.
 ## Install
 
 ```bash
-npm install
+npm install -g omniroute
 ```
 
 ## Run
 
 ```bash
-npm start
+omniroute
 ```
 
-This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
+This launches the OmniRoute CLI globally. The dashboard is available at
 `http://localhost:20128` once the process is running.
 
 ## Usage
@@ -30,7 +30,7 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 ## Alternatives
 
-- **Global CLI**: `npm install -g omniroute && omniroute`
+- **Local (project) install**: `npm install && npm start`
 - **Docker**: `docker run -d -p 127.0.0.1:20128:20128 diegosouzapw/omniroute:latest`
 
 See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full

@@ -21,8 +21,12 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 ## Usage
 
-1. Open the dashboard and connect a provider (e.g. a free-tier provider such as Kiro AI or
-   OpenCode Free).
+1. Open the dashboard and connect a provider. See [OmniRoute's free-tier
+   reference](https://github.com/diegosouzapw/OmniRoute/blob/release/v3.8.50/docs/reference/FREE_TIERS.md)
+   for the full, current list with token budgets and ToS notes before picking one — some
+   listed providers (e.g. Kiro, OpenCode) explicitly prohibit use with third-party proxies
+   like OmniRoute in their terms of service, so check the "ToS" column and prefer
+   providers marked `ok` (e.g. DeepSeek, Hyperbolic, Scaleway) or `caution` over `avoid`.
 2. Point your IDE or tool (Claude Code, Cursor, Cline, etc.) at `http://localhost:20128/v1`
    with an API key generated from the dashboard.
 3. Set the model to `auto` to let OmniRoute route requests across providers with intelligent

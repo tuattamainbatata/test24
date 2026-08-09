@@ -1,41 +1,27 @@
-# OmniRoute
+# test24
 
-Local setup for [OmniRoute](https://github.com/diegosouzapw/OmniRoute), an open-source AI
-gateway that aggregates 290+ AI providers (90+ with free tiers) behind a single
-OpenAI-compatible endpoint.
+This repository previously contained a local setup for
+[OmniRoute](https://github.com/diegosouzapw/OmniRoute), a third-party npm package
+marketed as an "AI gateway" that aggregates AI providers behind a single
+OpenAI-compatible endpoint. That setup has been removed after review of the
+upstream project's own documentation surfaced concerns:
 
-## Install
+- Its "zero-config" default behavior routes traffic through a free-tier
+  provider (OpenCode Free) whose terms of service explicitly restrict use to
+  "your own internal use... not on behalf of or for the benefit of any third
+  party" — i.e. the tool's out-of-the-box behavior conflicts with that
+  provider's ToS.
+- The codebase includes opt-in features (`src/mitm/`, `open-sse/config/cliFingerprints.ts`,
+  `open-sse/services/claudeCode*.ts`) that reimplement other vendors' internal
+  client-integrity/billing tokens and spoof TLS/header fingerprints of
+  official CLI tools (Claude Code, Codex, Copilot, Antigravity, Cursor) so
+  that proxied traffic is indistinguishable from the official client. The
+  project's own docs record real account bans resulting from this.
+- The project's `SECURITY.md` documents responding to supply-chain scanner
+  (Socket.dev/Snyk) malware findings with an attestation that the flagged
+  behavior is intentional, rather than disputing the classification.
 
-```bash
-npm install
-```
-
-## Run
-
-```bash
-npm start
-```
-
-This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
-`http://localhost:20128` once the process is running.
-
-## Usage
-
-1. Open the dashboard and connect a provider. See [OmniRoute's free-tier
-   reference](https://github.com/diegosouzapw/OmniRoute/blob/release/v3.8.50/docs/reference/FREE_TIERS.md)
-   for the full, current list with token budgets and ToS notes before picking one — some
-   listed providers (e.g. Kiro, OpenCode) explicitly prohibit use with third-party proxies
-   like OmniRoute in their terms of service, so check the "ToS" column and prefer
-   providers marked `ok` (e.g. DeepSeek, Hyperbolic, Scaleway) or `caution` over `avoid`.
-2. Point your IDE or tool (Claude Code, Cursor, Cline, etc.) at `http://localhost:20128/v1`
-   with an API key generated from the dashboard.
-3. Set the model to `auto` to let OmniRoute route requests across providers with intelligent
-   fallback and cost optimization.
-
-## Alternatives
-
-- **Global CLI**: `npm install -g omniroute && omniroute`
-- **Docker**: `docker run -d -p 127.0.0.1:20128:20128 diegosouzapw/omniroute:latest`
-
-See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full
-documentation.
+None of this is a statement about the maintainer's intent, but the combination
+of default behavior and available features carries real ToS and
+account-suspension risk for anyone pointing real credentials at it. This repo
+no longer installs or runs it.

@@ -40,6 +40,18 @@ export NVIDIA_API_KEY="nvapi-..."   # get one from https://build.nvidia.com
 python scripts/nvidia_streaming.py "your prompt here"
 ```
 
+## OpenRouter streaming example
+
+`scripts/openrouter_streaming.mjs` streams a chat completion via the
+OpenRouter SDK, printing content as it arrives and reporting reasoning
+token usage from the final chunk.
+
+```bash
+npm install
+export OPENROUTER_API_KEY="sk-or-..."   # get one from https://openrouter.ai/keys
+node scripts/openrouter_streaming.mjs "your prompt here"
+```
+
 ## Alternatives
 
 - **Global CLI**: `npm install -g omniroute && omniroute`

@@ -1,0 +1,13 @@
+{
+  "name": "openrouter-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal setup for calling AI models through OpenRouter's official OpenAI-compatible API.",
+  "type": "module",
+  "scripts": {
+    "start": "node test.mjs"
+  },
+  "dependencies": {
+    "openai": "^4.77.0"
+  }
+}

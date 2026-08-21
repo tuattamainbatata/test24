@@ -24,12 +24,16 @@
 ## Contents
 
 - `screener.py` — production-ready Python scanner (yfinance + pandas_ta).
+- `screener_fmp.py` — same scoring engine, backed by Financial Modeling Prep's REST API instead
+  of yfinance. Use this if yfinance is blocked on your network, or if you'd rather use a paid
+  data provider. **Requires an FMP plan with international/NSE exchange access** (their free
+  tier only covers US exchanges) — get a key at financialmodelingprep.com.
 - `pinescript/malkan_7star_prd.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
 - `sheets/FORMULAS.md` — Google Sheets / Excel no-code formula reference.
 - `docs/ARCHITECTURE.md` — deployment architecture (scheduler → scan → alert pipeline).
 - `docs/VALIDATION.md` — backtest / validation checklist before going live.
 
-## Quick Start (Python)
+## Quick Start (Python, yfinance)
 
 ```bash
 cd malkan-7star-prd
@@ -39,6 +43,25 @@ python screener.py
 
 Edit the `SECTOR_MAP` dict in `screener.py` to define your stock universe and each stock's
 sector benchmark index. Results with score >= 5/7 print to console and save to a CSV.
+
+## Quick Start (Python, FMP)
+
+```bash
+cd malkan-7star-prd
+pip install -r requirements.txt
+export FMP_API_KEY=your_key_here
+python screener_fmp.py --universe default        # curated SECTOR_MAP list
+python screener_fmp.py --universe nse --limit 500  # first 500 active NSE symbols from FMP
+python screener_fmp.py --universe nse               # every active NSE symbol (slow — one API
+                                                      # call per symbol, ~2000+ symbols; consider
+                                                      # capping with --limit or scanning a curated
+                                                      # list like Nifty 500 instead of the full tape)
+```
+
+`screener_fmp.py` hasn't been run against live FMP responses (this repo was built in an
+environment with no route to financialmodelingprep.com) — sanity-check it against a couple of
+known tickers before pointing it at the whole exchange, and adjust `get_data()` /
+`fetch_nse_universe()` if FMP's field names have moved since this was written.
 
 ## Key "Malkan Nuances" Encoded in This Implementation
 

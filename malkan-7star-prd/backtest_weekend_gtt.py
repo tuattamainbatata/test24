@@ -35,8 +35,24 @@ matching what was asked for. No transaction costs, no capital-pool cap across
 simultaneous positions (each ticker gets its own independent INR_PER_TRADE
 budget) -- see docs/VALIDATION.md before trusting this with real money.
 
+REFINEMENT (default ON, --allow-any-trend to disable): require Supertrend
+already bullish (close > st_value) on the signal day. The first run of this
+backtest found over half its trades exited same-day at ~breakeven because the
+6-star score has no trend requirement, so signals routinely fired with
+Supertrend already flipped bearish -- the GTT trigger (set from that Friday's
+Supertrend) was then already below Monday's open. This filter only removes
+trades that were mathematically dead on arrival; verified on real data it
+dropped exactly the zero-PnL trades and kept the two that actually moved.
+
+SEPARATE finding, not defaulted in (changes the "only 6 star" rule): lowering
+--min-score to 4 or 5 while keeping the uptrend filter unlocks a dramatically
+larger, similarly-high-quality sample on real data -- see README.md "Weekend-
+scan / GTT backtest" for the numbers. 6/6-only against a 13-stock sample
+produces too few trades (2, after the uptrend filter) to trust either way.
+
 Usage:
     python backtest_weekend_gtt.py AAPL.csv MSFT.csv NVDA.csv --years 6
+    python backtest_weekend_gtt.py AAPL.csv --min-score 5   # see the finding above
 """
 
 import argparse
@@ -51,6 +67,11 @@ from screener import calculate_indicators, analyze_stock, PERFECT_SCORE
 INR_PER_TRADE = 60000
 SUPERTREND_BUFFER = 1  # points below Supertrend before the GTT triggers
 
+# --require-uptrend filters out exactly the failure mode found in the first run of this
+# backtest: signals firing while Supertrend has ALREADY flipped bearish, so the GTT sell
+# trigger (set from the signal Friday's Supertrend value) is already below Monday's open
+# and the trade exits same-day for a wash. See README.md "Weekend-scan / GTT backtest".
+
 
 def load_csv(path):
     df = pd.read_csv(path, parse_dates=["date"]).set_index("date").sort_index()
@@ -63,7 +84,7 @@ def week_end_dates(index):
     return s.groupby(index.to_period("W")).last().tolist()
 
 
-def simulate_trades(ticker, df, warmup=300):
+def simulate_trades(ticker, df, warmup=300, min_score=PERFECT_SCORE, require_uptrend=False):
     trades = []
     positions_locked_until = None  # date index label; None = flat
 
@@ -79,8 +100,10 @@ def simulate_trades(ticker, df, warmup=300):
 
         window = df.iloc[: f_pos + 1]
         res = analyze_stock(ticker, window)
-        if res is None or res["ScoreNum"] != PERFECT_SCORE:
+        if res is None or res["ScoreNum"] < min_score:
             continue
+        if require_uptrend and not (float(df["close"].iloc[f_pos]) > float(df["st_value"].iloc[f_pos])):
+            continue  # Supertrend already bearish on the signal day -- skip, see module docstring
 
         entry_pos = f_pos + 1
         if entry_pos >= len(df):
@@ -160,7 +183,7 @@ def summarize(trades):
     }
 
 
-def run(tickers_csv, years):
+def run(tickers_csv, years, min_score=PERFECT_SCORE, require_uptrend=True, quiet=False):
     all_trades = []
     for path in tickers_csv:
         ticker = path.split("/")[-1].replace(".csv", "")
@@ -171,12 +194,19 @@ def run(tickers_csv, years):
             cutoff = df.index.max() - pd.DateOffset(years=years)
             warmup_rows = max(warmup_rows, int((df.index < cutoff).sum()))
 
-        trades = simulate_trades(ticker, df, warmup=warmup_rows)
+        trades = simulate_trades(ticker, df, warmup=warmup_rows, min_score=min_score, require_uptrend=require_uptrend)
         all_trades.extend(trades)
-        print(f"{ticker}: {len(trades)} trades")
+        if not quiet:
+            print(f"{ticker}: {len(trades)} trades")
+
+    label = f"min_score={min_score}/6, require_uptrend={require_uptrend}"
+    if quiet:
+        stats = summarize(all_trades)
+        stats["label"] = label
+        return all_trades, stats
 
     print("\n" + "=" * 100)
-    print(f"WEEKEND SCAN -> MONDAY OPEN -> INR {INR_PER_TRADE} -> SUPERTREND EXIT (6/6 only)")
+    print(f"WEEKEND SCAN -> MONDAY OPEN -> INR {INR_PER_TRADE} -> SUPERTREND EXIT ({label})")
     print("=" * 100)
     if all_trades:
         print(tabulate(all_trades, headers="keys", tablefmt="fancy_grid", showindex=False))
@@ -195,6 +225,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("tickers", nargs="+", help="CSV files (date,open,high,low,close,volume) to backtest")
     parser.add_argument("--years", type=int, default=6, help="only score/trade within the last N years (default 6)")
+    parser.add_argument("--min-score", type=int, default=PERFECT_SCORE,
+                         help=f"minimum star score to enter (default {PERFECT_SCORE}/6, the 'only 6 star' rule)")
+    parser.add_argument("--allow-any-trend", action="store_true",
+                         help="disable the uptrend-at-entry filter (default: ON) -- skips signals where "
+                              "Supertrend has already flipped bearish on the signal day, which otherwise "
+                              "produce same-day-wash trades; see module docstring")
     args = parser.parse_args()
 
-    run(args.tickers, args.years)
+    run(args.tickers, args.years, min_score=args.min_score, require_uptrend=not args.allow_any_trend)

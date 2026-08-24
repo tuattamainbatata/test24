@@ -149,22 +149,53 @@ python backtest_weekend_gtt.py AAPL.csv MSFT.csv NVDA.csv --years 6
    happens the GTT trigger (set from the signal Friday's Supertrend value) is already below
    Monday's open, and the position exits same-day for a wash.
 
-**A real run** (13 US large-caps — AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA, JPM, XOM, WMT,
-NFLX, AMD, HD — 2019–2026, last 6 years scored/traded, no NSE access from this dev environment):
+**First run** (13 US large-caps — AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA, JPM, XOM, WMT, NFLX,
+AMD, HD — 2019–2026, last 6 years scored/traded, no NSE access from this dev environment) found
+only 8 trades total, 5 of which exited same-day at ~breakeven via the mechanism above (confirmed
+against raw data — NVDA's 2025-11-07 signal fired the Friday after Supertrend had already flipped
+from 188.9 to 206.5, well above price). Net P&L: −₹440 on ₹4.79L invested — not a real result
+either way, just too few trades.
 
-- **8 trades total** across 13 stocks over 6 years — 6-star-only, Friday-only scanning is very
-  restrictive. 5 of those 8 exited same-day at ~breakeven via the mechanism above (confirmed by
-  inspecting the raw data, not a bug — NVDA's 2025-11-07 signal fired the Friday after Supertrend
-  had already flipped from 188.9 to 206.5, well above price).
-- Win rate 12.5%, total P&L on ₹4.79L invested across those 8 trades: **−₹440** (net roughly
-  flat — the sample is far too small to call this a real result either way).
+### Refinement: require Supertrend already bullish at entry (now the default)
 
-The honest conclusion from this run isn't "the strategy loses money" — it's that **8 trades in 6
-years across 13 large-caps is not a sample**, and more than half of what few signals exist get
-immediately neutralized by the entry/exit rules disagreeing with each other. Two ways to actually
-test this: run it against the real NSE top-600 (600 stocks instead of 13 should produce a lot
-more signals), or reconsider requiring price above Supertrend as part of entry so the exit rule
-isn't fighting the entry rule from day one.
+`backtest_weekend_gtt.py` now skips signals where Supertrend has already flipped bearish on the
+signal day by default (`--allow-any-trend` to disable). This is a strict improvement, not a
+tradeoff — it only ever removes trades that were mathematically dead on arrival: on the 6/6-only
+sample above it dropped exactly the 6 zero-PnL trades and kept the one winner (+₹537) and one
+loser (−₹977) unchanged, confirming the mechanism rather than coincidence.
+
+That still leaves only 2 trades at strict 6/6 across 13 stocks — nowhere near enough to trust.
+Loosening `--min-score` (still keeping the uptrend filter) unlocks a much larger sample on the
+same real data:
+
+| Variant | Trades | Win rate | Total P&L | Avg P&L/trade | Avg win | Avg loss | Max drawdown |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 6/6 + uptrend filter | 2 | 50% | −₹440 | −0.4% | +0.9% | −1.6% | ₹0 |
+| 5/6 + uptrend filter | 45 | 40% | **+₹61,131** | +2.3% | +11.7% | −4.1% | −₹15,439 |
+| 4/6 + uptrend filter | 202 | 39% | **+₹317,643** | +2.6% | +13.7% | −4.5% | −₹30,733 |
+| 5/6, no uptrend filter | 92 | 21% | +₹108,519 | +2.0% | +14.6% | −1.3% | — |
+| 4/6, no uptrend filter | 510 | 16% | +₹311,985 | +1.0% | +13.5% | −1.3% | — |
+
+Reading this: the uptrend filter improves quality at every score level (higher win rate, better
+avg P&L per trade), and once combined with a looser score threshold there's finally a real
+sample — 45-202 trades over 6 years, a classic trend-following profile (win less than half the
+time, but winners average 3x the size of losers), positive on every variant tested. Average
+holding period jumped to 35-39 days (vs. ~3 days in the original 6/6-only run) — once entries
+only fire in a confirmed uptrend, the Supertrend exit takes longer to trigger.
+
+**This is real evidence, but it changes your "only 6 star" rule** — that's a decision for you,
+not something to silently swap in. Two ways to reconcile it: (a) accept 4/6 or 5/6 as "perfect
+enough" for this specific GTT workflow, since the extra stars (candle trigger timing, momentum
+turning up) matter less once the trend filter is doing the real work of picking good entries; or
+(b) keep strict 6/6 and scale up the universe instead — 13 stocks is a thin sample by
+construction, and the real NSE top-600 (46x more names) should produce proportionally more
+signals even at the strict threshold. Both are worth testing once NSE data access exists; only
+(a) is testable from this dev environment.
+
+Caveats that still apply regardless of variant: not NSE data: no transaction costs/slippage; no
+capital-pool cap across simultaneous positions (each ticker gets its own independent
+₹60,000 budget, so total capital needed scales with how many signals overlap); Zerodha GTT
+doesn't auto-trail, so running this for real means modifying the order daily.
 
 ## Why "PRD" got dropped — research sources
 

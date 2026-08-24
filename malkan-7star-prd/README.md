@@ -28,6 +28,10 @@
   of yfinance. Use this if yfinance is blocked on your network, or if you'd rather use a paid
   data provider. **Requires an FMP plan with international/NSE exchange access** (their free
   tier only covers US exchanges) — get a key at financialmodelingprep.com.
+- `backtest.py` — walk-forward backtester: reuses `calculate_indicators`/`analyze_stock`
+  unchanged, simulates entries at the signal-day close with the framework's own stop
+  (candle low) and target (20-day swing high), and reports win rate, R-multiples,
+  expectancy, and profit factor by score tier.
 - `pinescript/malkan_7star_prd.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
 - `sheets/FORMULAS.md` — Google Sheets / Excel no-code formula reference.
 - `docs/ARCHITECTURE.md` — deployment architecture (scheduler → scan → alert pipeline).
@@ -62,6 +66,24 @@ python screener_fmp.py --universe nse               # every active NSE symbol (s
 environment with no route to financialmodelingprep.com) — sanity-check it against a couple of
 known tickers before pointing it at the whole exchange, and adjust `get_data()` /
 `fetch_nse_universe()` if FMP's field names have moved since this was written.
+
+## Backtesting
+
+```bash
+cd malkan-7star-prd
+python backtest.py AAPL.csv MSFT.csv NVDA.csv --benchmark SPY.csv --min-score 7 --max-hold 60
+```
+
+Each CSV needs `date,open,high,low,close,volume` columns — export these from `screener.py`'s
+data source (yfinance/FMP), your broker, or NSE's own historical archives. See `docs/VALIDATION.md`
+for the full pre-live checklist (slippage, sector-correlation caps, regime filters) — a
+backtest with no transaction costs and no sector diversification will overstate the edge.
+
+A real run against AAPL/MSFT/NVDA (2021–2026, SPY as benchmark, no sector data available) found:
+7/7 signals never fired in ~1,400 trading days per name; 6/7 fired 9 times with a negative
+expectancy (small sample); 5/7 fired 143 times with positive expectancy (+0.79R, profit factor
+2.15) but almost all of that edge came from 2 of the 3 tickers. Small-N, non-NSE, no-cost caveats
+apply in full — see the framework's own validation checklist before trusting any of that.
 
 ## Key "Malkan Nuances" Encoded in This Implementation
 

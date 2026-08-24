@@ -65,6 +65,9 @@ REGIME_FLOOR = 35  # Daily RSI must not have closed below this in RECENT_LOOKBAC
 RECENT_LOOKBACK = 5
 TARGET_RSI = 60  # documented exit: daily RSI back up to the range-shift ceiling
 
+SUPERTREND_LENGTH = 10
+SUPERTREND_MULTIPLIER = 3  # exit-only indicator -- not one of the 6 stars, see backtest_weekend_gtt.py
+
 
 def load_nse_universe(csv_path, top_n=600, market_cap_col=None):
     """
@@ -114,6 +117,13 @@ def calculate_indicators(df):
     df["cdl_hammer"] = ta.cdl_pattern(df["open"], df["high"], df["low"], df["close"], name="hammer")
     df["cdl_engulfing"] = ta.cdl_pattern(df["open"], df["high"], df["low"], df["close"], name="engulfing")
     df["cdl_piercing"] = ta.cdl_pattern(df["open"], df["high"], df["low"], df["close"], name="piercing")
+
+    # Supertrend: exit-only indicator, not part of the 6-star score. Used by
+    # backtest_weekend_gtt.py as a trailing-stop trigger.
+    st = ta.supertrend(df["high"], df["low"], df["close"], length=SUPERTREND_LENGTH, multiplier=SUPERTREND_MULTIPLIER)
+    df = pd.concat([df, st], axis=1)
+    val_col = next(c for c in st.columns if c.startswith("SUPERT_") and not c.startswith(("SUPERTd_", "SUPERTl_", "SUPERTs_")))
+    df["st_value"] = df[val_col]
     return df
 
 

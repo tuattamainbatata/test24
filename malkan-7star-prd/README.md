@@ -49,6 +49,9 @@ exit rule for this method, unlike a price-based swing-high target).
 - `screener_fmp.py` — same scoring engine via Financial Modeling Prep's REST API instead of
   yfinance. **Requires an FMP plan with international/NSE exchange access.**
 - `backtest.py` — walk-forward backtester, RSI-target-aware (see "Backtesting" below).
+- `backtest_weekend_gtt.py` — backtests the specific real-world workflow: scan on Friday's close,
+  6/6-only, enter Monday's open, fixed ₹60,000/trade, exit on a Supertrend-trail GTT (see
+  "Weekend-scan / GTT backtest" below).
 - `pinescript/malkan_gfs_rsi.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
 - `sheets/FORMULAS.md` — Google Sheets / Excel no-code formula reference.
 - `docs/ARCHITECTURE.md` — deployment architecture (scheduler → scan → alert pipeline).
@@ -94,9 +97,12 @@ export FMP_API_KEY=your_key_here
 python screener_fmp.py --universe nse --limit 600   # top 600 active NSE equities from FMP
 ```
 
-`screener_fmp.py` hasn't been run against live FMP responses (this repo was built in an
-environment with no route to financialmodelingprep.com) — sanity-check it against a couple of
-known tickers before pointing it at the whole exchange.
+`screener_fmp.py` uses the same `historical-price-eod-full` shape verified live against FMP for
+US tickers (via an FMP MCP connector, not this script directly — this dev environment has no
+direct route to financialmodelingprep.com). The NSE-specific bits (`fetch_nse_universe()`, and
+NSE data access itself) are still unverified — that connector's plan doesn't cover international
+exchanges. Sanity-check against a couple of known NSE tickers before pointing it at the whole
+exchange.
 
 ## Backtesting
 
@@ -120,6 +126,45 @@ transaction costs will overstate the edge.
 Caveats that matter: only 3 correlated US mega-cap tech names (not NSE, not diversified —
 NVDA alone drove most of the total return); zero transaction costs modeled; 6/6's 6-trade sample
 is too small to trust the direction, let alone the magnitude.
+
+## Weekend-scan / GTT backtest
+
+Backtests the actual intended workflow: scan Friday's close, 6/6-only, GTT buy for Monday's
+open, fixed ₹60,000 per trade, exit on a Supertrend(10,3)-trailing GTT sell (see the module
+docstring in `backtest_weekend_gtt.py` for the exact fill/trigger-timing rules).
+
+```bash
+cd malkan-7star-prd
+python backtest_weekend_gtt.py AAPL.csv MSFT.csv NVDA.csv --years 6
+```
+
+**Two things to know before running this for real:**
+1. **Zerodha GTT orders don't auto-update their trigger price.** This backtest models the
+   Supertrend trigger trailing automatically every day — running the strategy for real means
+   recalculating Supertrend and *modifying* the GTT order daily, not placing it once over the
+   weekend.
+2. **RSI-only entries and a Supertrend-only exit don't always agree.** The 6-star score has no
+   trend/Supertrend requirement (correctly, per Malkan's actual RSI-only method — see above), so
+   a real fraction of 6/6 signals fire while Supertrend has *already* flipped bearish. When that
+   happens the GTT trigger (set from the signal Friday's Supertrend value) is already below
+   Monday's open, and the position exits same-day for a wash.
+
+**A real run** (13 US large-caps — AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA, JPM, XOM, WMT,
+NFLX, AMD, HD — 2019–2026, last 6 years scored/traded, no NSE access from this dev environment):
+
+- **8 trades total** across 13 stocks over 6 years — 6-star-only, Friday-only scanning is very
+  restrictive. 5 of those 8 exited same-day at ~breakeven via the mechanism above (confirmed by
+  inspecting the raw data, not a bug — NVDA's 2025-11-07 signal fired the Friday after Supertrend
+  had already flipped from 188.9 to 206.5, well above price).
+- Win rate 12.5%, total P&L on ₹4.79L invested across those 8 trades: **−₹440** (net roughly
+  flat — the sample is far too small to call this a real result either way).
+
+The honest conclusion from this run isn't "the strategy loses money" — it's that **8 trades in 6
+years across 13 large-caps is not a sample**, and more than half of what few signals exist get
+immediately neutralized by the entry/exit rules disagreeing with each other. Two ways to actually
+test this: run it against the real NSE top-600 (600 stocks instead of 13 should produce a lot
+more signals), or reconsider requiring price above Supertrend as part of entry so the exit rule
+isn't fighting the entry rule from day one.
 
 ## Why "PRD" got dropped — research sources
 

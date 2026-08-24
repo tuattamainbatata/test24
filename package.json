@@ -4,7 +4,8 @@
   "private": true,
   "description": "Local setup for OmniRoute, an open-source AI gateway that aggregates 290+ AI providers behind a single OpenAI-compatible endpoint.",
   "scripts": {
-    "start": "omniroute"
+    "start": "omniroute",
+    "verify": "node -e \"const f=require('fs');console.log('BIN:'+(f.existsSync('node_modules/omniroute/bin/omniroute.mjs')?'ok':'MISSING'));console.log('VER:'+(()=>{try{return require('./node_modules/omniroute/package.json').version}catch{return'none'}})());console.log('symlink:'+(f.existsSync('node_modules/.bin/omniroute')?'ok':'MISSING'))\""
   },
   "dependencies": {
     "omniroute": "^3.8.49"

@@ -38,5 +38,7 @@ documentation.
 
 ## Other Projects
 
-- [`malkan-7star-prd/`](malkan-7star-prd/) — Vishal Malkan "7-Star PRD" stock screening
-  framework (Python scanner, TradingView Pine Script, and spreadsheet formulas).
+- [`malkan-7star-prd/`](malkan-7star-prd/) — Vishal Malkan RSI Range-Shift stock screening
+  framework (Python scanner, backtesters, TradingView Pine Script, spreadsheet formulas). Its
+  `news_check.py` uses this OmniRoute setup to LLM-sanity-check high-scoring signals against
+  recent news.

@@ -52,6 +52,9 @@ exit rule for this method, unlike a price-based swing-high target).
 - `backtest_weekend_gtt.py` — backtests the specific real-world workflow: scan on Friday's close,
   6/6-only, enter Monday's open, fixed ₹60,000/trade, exit on a Supertrend-trail GTT (see
   "Weekend-scan / GTT backtest" below).
+- `news_check.py` — post-scan LLM sanity check via OmniRoute (this repo's local AI gateway, see
+  the repo root README.md): flags high-scoring signals with recent bad news the RSI score
+  can't see (see "News/sentiment sanity check" below).
 - `pinescript/malkan_gfs_rsi.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
 - `sheets/FORMULAS.md` — Google Sheets / Excel no-code formula reference.
 - `docs/ARCHITECTURE.md` — deployment architecture (scheduler → scan → alert pipeline).
@@ -196,6 +199,47 @@ Caveats that still apply regardless of variant: not NSE data: no transaction cos
 capital-pool cap across simultaneous positions (each ticker gets its own independent
 ₹60,000 budget, so total capital needed scales with how many signals overlap); Zerodha GTT
 doesn't auto-trail, so running this for real means modifying the order daily.
+
+## News/sentiment sanity check (via OmniRoute)
+
+The 6-star score is pure price/RSI action — it has never read a single headline. A technically
+perfect setup can still be a stock that just missed earnings or is under a fraud investigation.
+`news_check.py` closes that gap: for each stock scoring at or above `--min-score` in a
+`screener.py` output CSV, it pulls recent headlines and asks an LLM (via this repo's local
+OmniRoute gateway — see the root [README.md](../README.md)) to flag anything a technical signal
+wouldn't catch: earnings miss, guidance cut, fraud/regulatory action, accounting irregularities,
+a management scandal, an active short-seller report. A flag doesn't disqualify the stock — it's a
+sanity check layered on top of the star score, printed alongside it, not a veto.
+
+```bash
+# from the repo root
+npm install
+npm start                 # leave running in its own terminal; dashboard at localhost:20128
+```
+
+Open the dashboard and connect at least one AI provider (any of the 90+ free-tier options work),
+then:
+
+```bash
+cd malkan-7star-prd
+export FMP_API_KEY=your_key_here   # for headlines -- needs a plan with news access
+python news_check.py malkan_gfs_scan_20260824.csv --min-score 5
+```
+
+**What's actually verified here vs. what isn't:** the OmniRoute server itself starts cleanly in
+this dev environment and serves a working OpenAI-compatible `/v1/chat/completions` endpoint with
+zero auth needed for local requests — confirmed by hitting it directly. What's *not* verified
+end-to-end is an actual completion succeeding: this sandbox has no outbound route to any of
+OmniRoute's pre-wired providers (opencode, felo-web) or to whatever you connect via the
+dashboard, the same network restriction that blocks NSE data everywhere else in this project.
+Sending a real request through `news_check.py`'s `check_headlines()` against the live local
+server reached OmniRoute fine and failed only at the provider-fetch step (`HTTPError 500:
+fetch failed`) — exactly the expected shape of "code is correct, environment has no internet."
+On your own machine, with a connected provider, this should just work.
+
+FMP's news endpoints are gated the same way its NSE price data is (see `screener_fmp.py`) — a
+Starter-tier-or-higher plan, not the free tier. Swap `fetch_headlines()` for a different news
+source if you don't have that.
 
 ## Why "PRD" got dropped — research sources
 

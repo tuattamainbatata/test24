@@ -1,41 +1,78 @@
-# Vishal Malkan "7-Star PRD" Stock Screening Framework
+# Vishal Malkan "Grandfather-Father-Son" RSI Range-Shift Screener (6-Star)
 
-> **Disclaimer:** Vishal Malkan (Malkansview) teaches proprietary setups. "PRD" in his
-> terminology typically refers to **"Price Rate of Change" (ROC) Momentum** combined with a
-> **"Pullback Reversal Day"** candle pattern. The "7-Star" is a confluence checklist. The logic
-> below reverse-engineers his public webinars/teachings (Supertrend, ROC, Volume, Price Action,
-> Structure) into a codifiable, quantitative framework. This is not financial advice — validate
-> with your own backtests before trading real capital.
+> **Correction from an earlier version of this project:** this was originally built around a
+> "7-Star PRD" framework (trend/EMA/Supertrend + ROC momentum + candlestick patterns + volume +
+> sector rotation) that turned out to be **speculative** — deep research found no evidence
+> Malkan uses the term "PRD" at all. What's actually extensively and consistently documented as
+> his real star-rated method is completely different: **RSI-only, multi-timeframe.** This
+> version replaces the old framework entirely. See "Research sources" below.
 
-## The 7-Star Confluence Checklist
+## The real framework: RSI Range-Shift + Grandfather-Father-Son
 
-| Star # | Malkan Concept | Quantitative Rule (Default Params) |
+- **60-40 range-shift**, not the classic 70-30: in a bull regime RSI holds above 40; in a bear
+  regime it's capped below 60.
+- **"Grandfather / Father / Son"** = Monthly / Weekly / Daily RSI(14), checked as a cascade:
+  higher timeframes confirm the regime, the daily timeframe times the pullback entry.
+- **Entry trigger**: a bullish reversal candle forms right as daily RSI pulls back into the 40
+  range-shift support zone.
+- **Stop**: below that candle's low. **Target**: daily RSI back up to 60.
+
+Public sources describe 5-star and 7-star variants of this system (more timeframes = more
+stars — the 7-star Chartink version adds Hourly and 15-min on top of Monthly/Weekly/Daily).
+Neither is independently documented as a "6-star" version, and Malkan's exact proprietary
+criteria per star-count isn't public. This implementation is a considered 6-star adaptation for
+an **end-of-day (daily close) screener** — no intraday timeframes — built from the same
+mechanics: the 3-timeframe RSI cascade, plus three checks that turn "RSI is in the right regime"
+into an actual, timed, risk-defined trade signal.
+
+## The 6-Star Checklist
+
+| Star # | Name | Rule |
 | :--- | :--- | :--- |
-| ⭐ 1 | Trend Alignment | Price > 50 EMA > 200 EMA (Daily). Supertrend (10, 3) = Green. |
-| ⭐ 2 | PRD Momentum (ROC) | ROC(9) > 0 AND ROC(9) > ROC(9)[1] (Accelerating Momentum). |
-| ⭐ 3 | Pullback & Reversal (PRD Candle) | Bullish Reversal Candle (Hammer/Bullish Engulfing/Piercing) at Key Support (50 EMA / Supertrend). |
-| ⭐ 4 | Volume Confirmation | Volume > 1.5x 20-Day Avg Volume on the Reversal Candle (Star 3). |
-| ⭐ 5 | Relative Strength (RS) | Stock ROC(20) > Nifty 50 ROC(20) (Outperforming Benchmark). |
-| ⭐ 6 | Risk:Reward Structure | Target (Swing High) / Stop Loss (Reversal Candle Low) >= 2.5:1. |
-| ⭐ 7 | Sector Tailwind | Sector Index > 50 EMA AND Sector ROC(9) > 0. |
+| ⭐ 1 | Grandfather | Monthly RSI(14) > 60 |
+| ⭐ 2 | Father | Weekly RSI(14) > 60 |
+| ⭐ 3 | Son | Daily RSI(14) pulled back into range-shift support (38–50) |
+| ⭐ 4 | Momentum | Daily RSI(14) turning up (today > yesterday) |
+| ⭐ 5 | Trigger | Bullish reversal candle (hammer/engulfing/piercing) today |
+| ⭐ 6 | Regime intact | Daily RSI(14) hasn't closed below 35 in the last 5 sessions |
 
-**Scoring:** 7/7 = "Core Buy" · 6/7 = "Watchlist" · <6 = Ignore.
+**Scoring:** 6/6 = "Core Buy" (perfect setup) · 4-5/6 = "Watchlist" · <4 = Ignore.
+
+Entry = signal-day close. Stop = signal-day low. Target = exit when daily RSI(14) closes back
+at/above 60 (this is an RSI-level target, not a price target — that's Malkan's own documented
+exit rule for this method, unlike a price-based swing-high target).
 
 ## Contents
 
-- `screener.py` — production-ready Python scanner (yfinance + pandas_ta).
-- `screener_fmp.py` — same scoring engine, backed by Financial Modeling Prep's REST API instead
-  of yfinance. Use this if yfinance is blocked on your network, or if you'd rather use a paid
-  data provider. **Requires an FMP plan with international/NSE exchange access** (their free
-  tier only covers US exchanges) — get a key at financialmodelingprep.com.
-- `backtest.py` — walk-forward backtester: reuses `calculate_indicators`/`analyze_stock`
-  unchanged, simulates entries at the signal-day close with the framework's own stop
-  (candle low) and target (20-day swing high), and reports win rate, R-multiples,
-  expectancy, and profit factor by score tier.
-- `pinescript/malkan_7star_prd.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
+- `screener.py` — production-ready Python scanner (yfinance + pandas_ta). Also has
+  `load_nse_universe()` for building an NSE top-600 equity list (see below).
+- `screener_fmp.py` — same scoring engine via Financial Modeling Prep's REST API instead of
+  yfinance. **Requires an FMP plan with international/NSE exchange access.**
+- `backtest.py` — walk-forward backtester, RSI-target-aware (see "Backtesting" below).
+- `pinescript/malkan_gfs_rsi.pine` — TradingView Pine Script v5 indicator with dashboard + alerts.
 - `sheets/FORMULAS.md` — Google Sheets / Excel no-code formula reference.
 - `docs/ARCHITECTURE.md` — deployment architecture (scheduler → scan → alert pipeline).
 - `docs/VALIDATION.md` — backtest / validation checklist before going live.
+
+## NSE universe: top 600, equity only (no ETFs/derivatives)
+
+```python
+from screener import load_nse_universe
+universe = load_nse_universe("EQUITY_L.csv", top_n=600)
+```
+
+Download NSE's own equity listing first — it already excludes ETFs and derivatives (neither is
+in the EQ series / neither is a "listed" instrument in this file), so no separate filter is
+needed beyond `SERIES == 'EQ'`, which `load_nse_universe()` applies automatically:
+
+```bash
+curl -o EQUITY_L.csv "https://archives.nseindia.com/content/equity/EQUITY_L.csv"
+```
+
+That file has no market-cap column, so "top 600 by market cap" needs a cap ranking joined in
+separately (FMP profile data, NSE's own market-cap report, etc.) — pass its column name as
+`market_cap_col` to rank before truncating; without it, `load_nse_universe()` just takes the
+first 600 rows of the file as-is.
 
 ## Quick Start (Python, yfinance)
 
@@ -45,8 +82,8 @@ pip install -r requirements.txt
 python screener.py
 ```
 
-Edit the `SECTOR_MAP` dict in `screener.py` to define your stock universe and each stock's
-sector benchmark index. Results with score >= 5/7 print to console and save to a CSV.
+Edit `NSE_UNIVERSE` in `screener.py` (or use `load_nse_universe()` above) to set your stock
+universe. Results with score >= 4/6 print to console and save to a CSV.
 
 ## Quick Start (Python, FMP)
 
@@ -54,47 +91,50 @@ sector benchmark index. Results with score >= 5/7 print to console and save to a
 cd malkan-7star-prd
 pip install -r requirements.txt
 export FMP_API_KEY=your_key_here
-python screener_fmp.py --universe default        # curated SECTOR_MAP list
-python screener_fmp.py --universe nse --limit 500  # first 500 active NSE symbols from FMP
-python screener_fmp.py --universe nse               # every active NSE symbol (slow — one API
-                                                      # call per symbol, ~2000+ symbols; consider
-                                                      # capping with --limit or scanning a curated
-                                                      # list like Nifty 500 instead of the full tape)
+python screener_fmp.py --universe nse --limit 600   # top 600 active NSE equities from FMP
 ```
 
 `screener_fmp.py` hasn't been run against live FMP responses (this repo was built in an
 environment with no route to financialmodelingprep.com) — sanity-check it against a couple of
-known tickers before pointing it at the whole exchange, and adjust `get_data()` /
-`fetch_nse_universe()` if FMP's field names have moved since this was written.
+known tickers before pointing it at the whole exchange.
 
 ## Backtesting
 
 ```bash
 cd malkan-7star-prd
-python backtest.py AAPL.csv MSFT.csv NVDA.csv --benchmark SPY.csv --min-score 7 --max-hold 60
+python backtest.py AAPL.csv MSFT.csv NVDA.csv --min-score 6 --max-hold 60
 ```
 
-Each CSV needs `date,open,high,low,close,volume` columns — export these from `screener.py`'s
-data source (yfinance/FMP), your broker, or NSE's own historical archives. See `docs/VALIDATION.md`
-for the full pre-live checklist (slippage, sector-correlation caps, regime filters) — a
-backtest with no transaction costs and no sector diversification will overstate the edge.
+Each CSV needs `date,open,high,low,close,volume` columns. See `docs/VALIDATION.md` for the full
+pre-live checklist (slippage, sector-correlation caps, regime filters) — a backtest with no
+transaction costs will overstate the edge.
 
-A real run against AAPL/MSFT/NVDA (2021–2026, SPY as benchmark, no sector data available) found:
-7/7 signals never fired in ~1,400 trading days per name; 6/7 fired 9 times with a negative
-expectancy (small sample); 5/7 fired 143 times with positive expectancy (+0.79R, profit factor
-2.15) but almost all of that edge came from 2 of the 3 tickers. Small-N, non-NSE, no-cost caveats
-apply in full — see the framework's own validation checklist before trusting any of that.
+**A real run** (AAPL/MSFT/NVDA, 2021–2026, no NSE access from this dev environment — see below):
 
-## Key "Malkan Nuances" Encoded in This Implementation
+| Min score | Trades | Win rate | Expectancy | Profit factor |
+| :--- | :--- | :--- | :--- | :--- |
+| 6/6 | 6 | 33% | −0.03R | 0.95 |
+| 5/6 | 72 | 31% | +0.13R | 1.20 |
+| 4/6 | 506 | 40% | **+0.56R** | **2.05** |
 
-1. **PRD = ROC Acceleration**, not just `ROC > 0`. It must be *rising* (`ROC[0] > ROC[1]`) to
-   catch the start of momentum, not a stalling move.
-2. **Candle Context (Star 3):** A hammer at the 50 EMA in a downtrend is a trap — Star 1
-   (trend up) and Star 3 (reversal candle at support) are scored independently but both must be
-   true for a valid "Core Buy".
-3. **Volume on the reversal candle** (Star 4), not the breakout candle — confirms accumulation
-   on the dip rather than late chasing.
-4. **Sector Filter (Star 7):** "A rising tide lifts all boats." If the sector is weak, treat a
-   7/7 signal as lower-conviction (e.g. halve position size) even though it technically scores.
-5. **Exit strategy** (not scored, but part of the system): trail stop with Supertrend(10,3)
-   flip to red; take partial profit at 1:1 R:R and trail the rest.
+Caveats that matter: only 3 correlated US mega-cap tech names (not NSE, not diversified —
+NVDA alone drove most of the total return); zero transaction costs modeled; 6/6's 6-trade sample
+is too small to trust the direction, let alone the magnitude.
+
+## Why "PRD" got dropped — research sources
+
+Vishal Malkan's actual, extensively documented method:
+- [A Complete Guide To 5-Star RSI Strategy Ft. Vishal B Malkan](https://blog.elearnmarkets.com/a-5-star-rsi-strategy/)
+- [RSI 7 Star Strategy — Chartink screener](https://chartink.com/screener/rsi-7-star-strategy-vishal-malkan)
+- [Seven Star Malkan BUY setup (Grandfather-Father-Son) — Chartink screener](https://chartink.com/screener/seven-star-malkan-buy-setup-grandfather-father-son-for-passive-traders-sell-rules)
+- [60-40 RSI Strategy / 5-Star Swing Trading writeup](https://forexvp.com/forex-trading-systems-free-download/60-40-rsi-strategy-5-star-swing-trading-strategy-free-download/)
+
+No public source ties "PRD" to Malkan specifically. If you have a definition from one of his
+paid courses/PDFs that these public sources don't cover, that's the one to build against instead
+— tell me the exact rules and this gets rebuilt around them.
+
+## Disclaimer
+
+Not financial advice. The exact star-rated criteria taught in Malkan's paid courses may differ
+from this public-source reconstruction in ways that matter — validate with your own backtests
+(and against course material, if you have access to it) before trading real capital.

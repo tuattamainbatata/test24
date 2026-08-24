@@ -6,8 +6,8 @@ graph TD
     B --> C{Data Source}
     C -->|Primary| D[NSE Python Library / yfinance]
     C -->|Backup| E[Alpha Vantage / Twelve Data]
-    B --> F[Calculate 7 Stars Vectorized]
-    F --> G[Filter Score >= 6]
+    B --> F[Calculate 6 Stars: RSI Cascade + Candle Trigger]
+    F --> G[Filter Score >= 4]
     G --> H[Enrich: Fundamentals / Open Interest]
     H --> I[Output: CSV / PostgreSQL / Google Sheet]
     I --> J[Telegram Bot / Email / Dashboard]

@@ -1,44 +1,42 @@
 """
-Walk-forward backtester for the Malkan 7-Star PRD framework.
+Walk-forward backtester for the Malkan GFS RSI Range-Shift framework (6-Star).
 
-Reuses calculate_indicators() / analyze_stock() from screener.py completely
-unchanged -- every indicator they use (EMA, ROC, Supertrend, SMA, candle
-patterns, rolling swing-high) is trailing-only, so it's safe to compute them
-once over the full series and then walk forward by slicing df.iloc[:t+1] and
-calling analyze_stock() on the slice: iloc[-1] of the slice is exactly "what
-was knowable at the close of day t", with no lookahead into future bars.
+Reuses calculate_indicators() / analyze_stock() from screener.py unchanged.
+The daily RSI and candle-pattern columns calculate_indicators() adds are
+trailing-only, so they're safe to precompute once over the full series; the
+monthly/weekly RSI (Grandfather/Father) are recomputed by analyze_stock()
+itself from whatever slice it's given, which is what keeps this lookahead-free
+-- walking forward by slicing df.iloc[:t+1] means iloc[-1] of that slice is
+exactly "what was knowable at the close of day t", and the monthly/weekly RSI
+built from that slice never sees a future daily row.
 
 Trade simulation rules (see docs/VALIDATION.md for why these matter):
   - Signal fires on day t if score >= min_score AND no open position in that
     name. Entry = day t's close (the same close the signal was computed from
     -- a common backtest simplification; real execution would be next day's
-    open plus slippage, see --entry-lag).
-  - Stop = day t's low (Star 6's own stop-loss level).
-  - Target = day t's 20-day swing high (Star 6's own target level).
-  - Each subsequent day, in priority order: stop hit (low <= stop) > target
-    hit (high >= target) > Supertrend flip to red (close < st_value, the
-    trailing-stop exit described in the README) > max holding period.
+    open plus slippage).
+  - Stop = day t's low (the signal candle's own low, per the documented rule).
+  - Target: exit when daily RSI(14) closes back at/above TARGET_RSI (60) --
+    the documented target is an RSI level, not a price level.
+  - Priority each subsequent day: stop hit (low <= stop) > RSI target hit >
+    max holding period.
   - One position per ticker at a time; scanning resumes the day after exit.
 
 Usage:
-    python backtest.py AAPL.csv MSFT.csv NVDA.csv --benchmark SPY.csv --min-score 7
-    python backtest.py AAPL.csv --min-score 6 --max-hold 60
+    python backtest.py AAPL.csv MSFT.csv NVDA.csv --min-score 6
+    python backtest.py AAPL.csv --min-score 4 --max-hold 60
 
-Each positional CSV must have columns: date,open,high,low,close,volume
-(exactly what screener.py's own output CSVs look like once you add a `date`
-index column, or what you get from FMP's historical-price-eod-full/full for
-US tickers, or yfinance/NSE data for Indian tickers).
+Each positional CSV must have columns: date,open,high,low,close,volume.
 """
 
 import argparse
-import sys
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
 from tabulate import tabulate
 
-from screener import calculate_indicators, analyze_stock
+from screener import calculate_indicators, analyze_stock, TARGET_RSI, MIN_SCORE_TO_REPORT, PERFECT_SCORE
 
 
 def load_csv(path):
@@ -46,16 +44,14 @@ def load_csv(path):
     return df[["open", "high", "low", "close", "volume"]]
 
 
-def simulate_trades(ticker, df, df_bench, df_sector, min_score, max_hold_days, warmup=210):
+def simulate_trades(ticker, df, min_score, max_hold_days, warmup=300):
     trades = []
     i = warmup
     n = len(df)
     while i < n - 1:  # need at least one future bar to exit on
         window = df.iloc[: i + 1]
-        bench_window = df_bench.iloc[: i + 1] if df_bench is not None else None
-        sector_window = df_sector.iloc[: i + 1] if df_sector is not None else None
 
-        res = analyze_stock(ticker, window, bench_window, sector_window)
+        res = analyze_stock(ticker, window)
         if res is None or res["ScoreNum"] < min_score:
             i += 1
             continue
@@ -63,7 +59,6 @@ def simulate_trades(ticker, df, df_bench, df_sector, min_score, max_hold_days, w
         entry_date = df.index[i]
         entry_price = float(df["close"].iloc[i])
         stop = float(df["low"].iloc[i])
-        target = float(df["swing_high_20"].iloc[i])
         risk = entry_price - stop
         if risk <= 0:
             i += 1
@@ -76,10 +71,8 @@ def simulate_trades(ticker, df, df_bench, df_sector, min_score, max_hold_days, w
             day = df.iloc[j]
             if day["low"] <= stop:
                 exit_price, exit_reason = stop, "stop"
-            elif day["high"] >= target:
-                exit_price, exit_reason = target, "target"
-            elif day["close"] < day["st_value"]:
-                exit_price, exit_reason = float(day["close"]), "trail (Supertrend flip)"
+            elif day["rsi_14"] >= TARGET_RSI:
+                exit_price, exit_reason = float(day["close"]), "target (RSI)"
             elif j == hold_limit:
                 exit_price, exit_reason = float(day["close"]), "time"
             if exit_price is not None:
@@ -97,7 +90,6 @@ def simulate_trades(ticker, df, df_bench, df_sector, min_score, max_hold_days, w
             "EntryDate": entry_date.date(),
             "Entry": round(entry_price, 2),
             "Stop": round(stop, 2),
-            "Target": round(target, 2),
             "ExitDate": exit_date.date(),
             "Exit": round(exit_price, 2),
             "Reason": exit_reason,
@@ -137,20 +129,17 @@ def summarize(trades):
     }
 
 
-def run(tickers_csv, bench_csv, sector_csv, min_score, max_hold_days):
-    df_bench = calculate_indicators(load_csv(bench_csv)) if bench_csv else None
-    df_sector = calculate_indicators(load_csv(sector_csv)) if sector_csv else None
-
+def run(tickers_csv, min_score, max_hold_days):
     all_trades = []
     for path in tickers_csv:
         ticker = path.split("/")[-1].replace(".csv", "")
         df = calculate_indicators(load_csv(path))
-        trades = simulate_trades(ticker, df, df_bench, df_sector, min_score, max_hold_days)
+        trades = simulate_trades(ticker, df, min_score, max_hold_days)
         all_trades.extend(trades)
         print(f"{ticker}: {len(trades)} trades")
 
     print("\n" + "=" * 100)
-    print(f"MALKAN 7-STAR PRD BACKTEST -- min_score={min_score}/7, max_hold={max_hold_days}d")
+    print(f"MALKAN GFS RSI BACKTEST -- min_score={min_score}/{PERFECT_SCORE}, max_hold={max_hold_days}d")
     print("=" * 100)
     if all_trades:
         print(tabulate(all_trades, headers="keys", tablefmt="fancy_grid", showindex=False))
@@ -168,14 +157,9 @@ def run(tickers_csv, bench_csv, sector_csv, min_score, max_hold_days):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("tickers", nargs="+", help="CSV files (date,open,high,low,close,volume) to backtest")
-    parser.add_argument("--benchmark", help="CSV for the relative-strength benchmark (e.g. Nifty/SPY)")
-    parser.add_argument("--sector", help="CSV for the sector index (Star 7); omitted = neutral pass")
-    parser.add_argument("--min-score", type=int, default=7, help="minimum star score to enter (default 7)")
+    parser.add_argument("--min-score", type=int, default=MIN_SCORE_TO_REPORT,
+                         help=f"minimum star score to enter (default {MIN_SCORE_TO_REPORT}/{PERFECT_SCORE})")
     parser.add_argument("--max-hold", type=int, default=60, help="max holding period in trading days (default 60)")
     args = parser.parse_args()
 
-    if not args.benchmark:
-        print("Warning: no --benchmark given -- Star 5 (relative strength) falls back to "
-              "'stock ROC(20) > 0' instead of comparing against an index.", file=sys.stderr)
-
-    run(args.tickers, args.benchmark, args.sector, args.min_score, args.max_hold)
+    run(args.tickers, args.min_score, args.max_hold)

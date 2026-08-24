@@ -1,12 +1,12 @@
 """
-FMP-backed variant of the Malkan 7-Star PRD screener, for scanning NSE stocks
-with your own Financial Modeling Prep API key.
+FMP-backed variant of the Malkan GFS RSI Range-Shift screener, for scanning
+NSE stocks with your own Financial Modeling Prep API key.
 
 Why this file exists: screener.py uses yfinance, which is free but requires
 outbound internet access to Yahoo Finance. If that's unavailable to you (e.g.
 a locked-down network) or you'd rather use a paid data provider, this pulls
 the same OHLCV shape from FMP's REST API and runs it through the identical
-7-star scoring engine (calculate_indicators / analyze_stock, imported
+6-star scoring engine (calculate_indicators / analyze_stock, imported
 unchanged from screener.py).
 
 Requires a paid FMP plan (Starter or higher) -- FMP's free tier only serves
@@ -22,9 +22,9 @@ pointing it at the full exchange.
 Usage:
     export FMP_API_KEY=your_key_here
     pip install -r requirements.txt requests
-    python3 screener_fmp.py                      # default curated universe (SECTOR_MAP)
-    python3 screener_fmp.py --universe nse --limit 500   # first 500 active NSE symbols
-    python3 screener_fmp.py --universe nse                # ALL active NSE symbols (slow, see below)
+    python3 screener_fmp.py                           # small sample universe (NSE_UNIVERSE)
+    python3 screener_fmp.py --universe nse --limit 600  # top 600 active NSE equities from FMP
+    python3 screener_fmp.py --universe nse               # ALL active NSE equities (slow, see below)
 """
 
 import argparse
@@ -38,8 +38,7 @@ import requests
 from tabulate import tabulate
 
 from screener import (
-    SECTOR_MAP,
-    NIFTY_TICKER,
+    NSE_UNIVERSE,
     MIN_SCORE_TO_REPORT,
     calculate_indicators,
     analyze_stock,
@@ -59,7 +58,7 @@ def fmp_get(path, **params):
     return resp.json()
 
 
-def get_data(symbol, lookback_days=400):
+def get_data(symbol, lookback_days=500):
     to_date = datetime.now().date()
     from_date = to_date - timedelta(days=int(lookback_days * 1.6))  # pad for weekends/holidays
     try:
@@ -81,52 +80,54 @@ def get_data(symbol, lookback_days=400):
     return df[["open", "high", "low", "close", "volume"]]
 
 
-def fetch_nse_universe(limit=None):
-    """Best-effort fetch of actively-traded NSE symbols via FMP's symbol directory."""
+def fetch_nse_universe(limit=600):
+    """
+    Best-effort fetch of active NSE equity symbols via FMP's symbol directory,
+    excluding ETFs/funds. FMP's company-symbols-list doesn't reliably flag
+    ETFs per-exchange, so this filters on isEtf/isFund when present and drops
+    obvious fund-name patterns as a fallback -- spot-check the result before
+    trusting it, this hasn't been run against a live response.
+    """
     data = fmp_get("company-symbols-list")
-    symbols = [row["symbol"] for row in data if row.get("exchangeShortName") == "NSE" or str(row.get("symbol", "")).endswith(".NS")]
+    symbols = []
+    for row in data:
+        sym = str(row.get("symbol", ""))
+        if not (row.get("exchangeShortName") == "NSE" or sym.endswith(".NS")):
+            continue
+        if row.get("isEtf") or row.get("isFund"):
+            continue
+        name = str(row.get("name", "")).lower()
+        if "etf" in name or " fund" in name:
+            continue
+        symbols.append(sym)
     if limit:
         symbols = symbols[:limit]
     return symbols
 
 
 def run_screener(universe, min_score=MIN_SCORE_TO_REPORT):
-    print(f"Fetching benchmark data ({NIFTY_TICKER})...")
-    df_nifty = get_data(NIFTY_TICKER)
-    df_nifty = calculate_indicators(df_nifty) if df_nifty is not None else None
-    time.sleep(REQUEST_DELAY)
-
-    sector_tickers = sorted(set(SECTOR_MAP.get(t) for t in universe if SECTOR_MAP.get(t)))
-    sector_data = {}
-    for st_ticker in sector_tickers:
-        df_s = get_data(st_ticker)
-        if df_s is not None:
-            sector_data[st_ticker] = calculate_indicators(df_s)
-        time.sleep(REQUEST_DELAY)
-
     print(f"Scanning {len(universe)} stocks (this will take a while -- one API call per symbol)...")
     results = []
     for i, tk in enumerate(universe, 1):
         df = get_data(tk)
         if df is not None:
             df = calculate_indicators(df)
-            df_sector = sector_data.get(SECTOR_MAP.get(tk))
-            res = analyze_stock(tk, df, df_nifty, df_sector)
+            res = analyze_stock(tk, df)
             if res and res["ScoreNum"] >= min_score:
                 results.append(res)
         if i % 50 == 0:
             print(f"  ...{i}/{len(universe)} scanned, {len(results)} hits so far")
         time.sleep(REQUEST_DELAY)
 
-    results.sort(key=lambda x: (x["ScoreNum"], x["RR"]), reverse=True)
+    results.sort(key=lambda x: (x["ScoreNum"], x["MonthlyRSI"]), reverse=True)
     display_rows = [{k: v for k, v in r.items() if k != "ScoreNum"} for r in results]
 
     print("\n" + "=" * 100)
-    print(f"VISHAL MALKAN 7-STAR PRD SCANNER (FMP) - {datetime.now().strftime('%d-%b-%Y')}")
+    print(f"MALKAN GFS RSI RANGE-SHIFT SCANNER (FMP, 6-Star) - {datetime.now().strftime('%d-%b-%Y')}")
     print("=" * 100)
     print(tabulate(display_rows, headers="keys", tablefmt="fancy_grid", showindex=False))
 
-    out_path = f"malkan_7star_scan_fmp_{datetime.now().strftime('%Y%m%d')}.csv"
+    out_path = f"malkan_gfs_scan_fmp_{datetime.now().strftime('%Y%m%d')}.csv"
     pd.DataFrame(display_rows).to_csv(out_path, index=False)
     print(f"\nResults saved to {out_path}")
 
@@ -134,22 +135,22 @@ def run_screener(universe, min_score=MIN_SCORE_TO_REPORT):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--universe", choices=["default", "nse"], default="default",
-                         help="'default' = the curated SECTOR_MAP list in screener.py; "
-                              "'nse' = fetch all active NSE symbols from FMP")
-    parser.add_argument("--limit", type=int, default=None,
-                         help="cap the number of symbols scanned (recommended with --universe nse)")
+                         help="'default' = the small sample list in screener.py; "
+                              "'nse' = fetch active NSE equity symbols from FMP")
+    parser.add_argument("--limit", type=int, default=600,
+                         help="cap the number of symbols scanned (default 600, matching 'top 600')")
     parser.add_argument("--min-score", type=int, default=MIN_SCORE_TO_REPORT,
-                         help=f"only report stocks scoring at least this many stars (default {MIN_SCORE_TO_REPORT})")
+                         help=f"only report stocks scoring at least this many of 6 stars (default {MIN_SCORE_TO_REPORT})")
     args = parser.parse_args()
 
     if not API_KEY:
         sys.exit("Set FMP_API_KEY in your environment first, e.g.: export FMP_API_KEY=your_key_here")
 
     if args.universe == "nse":
-        print("Fetching NSE symbol list from FMP...")
+        print("Fetching NSE equity symbol list from FMP...")
         stock_universe = fetch_nse_universe(limit=args.limit)
         print(f"Got {len(stock_universe)} NSE symbols.")
     else:
-        stock_universe = list(SECTOR_MAP.keys())[: args.limit] if args.limit else list(SECTOR_MAP.keys())
+        stock_universe = NSE_UNIVERSE[: args.limit] if args.limit else NSE_UNIVERSE
 
     run_screener(stock_universe, min_score=args.min_score)

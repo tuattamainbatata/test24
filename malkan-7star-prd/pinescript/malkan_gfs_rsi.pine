@@ -1,0 +1,84 @@
+//@version=5
+indicator("Malkan GFS RSI Range-Shift [6-Star]", overlay=false, max_labels_count=50)
+
+// Grandfather (Monthly) / Father (Weekly) / Son (Daily) RSI Range-Shift cascade.
+// See README.md in this repo for the research behind this -- Malkan's actual
+// documented method is RSI-only, multi-timeframe (60-40 range-shift), not the
+// trend/candlestick/volume "7-Star PRD" this project started with.
+
+// --- INPUTS ---
+grp_rsi = "RSI"
+rsi_len = input.int(14, "RSI Length", group=grp_rsi)
+gf_threshold = input.float(60, "Grandfather/Father bull-regime floor", group=grp_rsi)
+pullback_lo = input.float(38, "Son pullback zone -- low", group=grp_rsi)
+pullback_hi = input.float(50, "Son pullback zone -- high", group=grp_rsi)
+regime_floor = input.float(35, "Regime-intact floor (5-session lookback)", group=grp_rsi)
+target_rsi = input.float(60, "Target: Daily RSI back up to", group=grp_rsi)
+
+// --- RSI CASCADE ---
+daily_rsi = ta.rsi(close, rsi_len)
+monthly_rsi = request.security(syminfo.tickerid, "M", ta.rsi(close, rsi_len)[barstate.isrealtime ? 1 : 0], lookahead=barmerge.lookahead_off)
+weekly_rsi = request.security(syminfo.tickerid, "W", ta.rsi(close, rsi_len)[barstate.isrealtime ? 1 : 0], lookahead=barmerge.lookahead_off)
+
+// --- 6 STARS ---
+star1_grandfather = monthly_rsi > gf_threshold
+star2_father = weekly_rsi > gf_threshold
+star3_son = daily_rsi >= pullback_lo and daily_rsi <= pullback_hi
+
+// Trigger candle: hammer / bullish engulfing / piercing (same patterns as screener.py)
+is_hammer = (close > open) and (high - close) < (close - open) * 0.5 and (open - low) > (close - open) * 2.0
+is_engulf = (close[1] < open[1]) and (close > open) and (close >= open[1]) and (open <= close[1])
+is_pierce = (close[1] < open[1]) and (close > open) and (open < low[1]) and (close > (open[1] + close[1]) / 2) and (close < open[1])
+star5_trigger = is_hammer or is_engulf or is_pierce
+
+star4_momentum = daily_rsi > daily_rsi[1]
+star6_regime_intact = ta.lowest(daily_rsi, 5) >= regime_floor
+
+score = (star1_grandfather ? 1 : 0) + (star2_father ? 1 : 0) + (star3_son ? 1 : 0) +
+  (star4_momentum ? 1 : 0) + (star5_trigger ? 1 : 0) + (star6_regime_intact ? 1 : 0)
+
+entry = close
+sl = low
+
+// --- VISUALS ---
+plot(daily_rsi, "Daily RSI (Son)", color=color.blue, linewidth=2)
+plot(weekly_rsi, "Weekly RSI (Father)", color=color.orange, linewidth=1)
+plot(monthly_rsi, "Monthly RSI (Grandfather)", color=color.purple, linewidth=1)
+hline(gf_threshold, "60 (bull-regime floor)", color=color.gray)
+hline(pullback_lo, "38 (pullback zone lo)", color=color.new(color.gray, 60))
+hline(pullback_hi, "50 (pullback zone hi)", color=color.new(color.gray, 60))
+hline(target_rsi, "Target RSI", color=color.green)
+
+if star5_trigger and (score >= 5)
+    label.new(bar_index, 20,
+      text="Score " + str.tostring(score) + "/6\nSL:" + str.tostring(sl, "#.##") + "\nTarget: RSI>=" + str.tostring(target_rsi),
+      color=color.green, textcolor=color.white, style=label.style_label_up, size=size.small)
+
+// Dashboard table
+var table dash = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 80), border_width=1)
+if barstate.islast
+    table.cell(dash, 0, 0, "STAR", bgcolor=color.gray, text_color=color.white)
+    table.cell(dash, 1, 0, "STATUS", bgcolor=color.gray, text_color=color.white)
+
+    var bool[] stars_arr = array.new_bool(6)
+    array.set(stars_arr, 0, star1_grandfather)
+    array.set(stars_arr, 1, star2_father)
+    array.set(stars_arr, 2, star3_son)
+    array.set(stars_arr, 3, star4_momentum)
+    array.set(stars_arr, 4, star5_trigger)
+    array.set(stars_arr, 5, star6_regime_intact)
+
+    var string[] names = array.from("1 Grandfather (M)", "2 Father (W)", "3 Son pullback (D)", "4 RSI turning up", "5 Reversal candle", "6 Regime intact")
+
+    for i = 0 to 5
+        cell_ok = array.get(stars_arr, i)
+        c = cell_ok ? color.green : color.red
+        table.cell(dash, 0, i + 1, array.get(names, i), text_color=color.white)
+        table.cell(dash, 1, i + 1, cell_ok ? "YES" : "NO", bgcolor=c, text_color=color.white)
+
+    table.cell(dash, 0, 7, "TOTAL SCORE", bgcolor=color.gray, text_color=color.white)
+    sc_color = score >= 6 ? color.lime : (score >= 4 ? color.yellow : color.red)
+    table.cell(dash, 1, 7, str.tostring(score) + " / 6", bgcolor=sc_color, text_color=color.black)
+
+// Alert condition
+alertcondition(star5_trigger and score >= 4, title="GFS RSI Setup (Score 4+)", message="Setup: {{ticker}} Score: {{score}}/6")

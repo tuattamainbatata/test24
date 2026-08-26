@@ -48,12 +48,31 @@ multi-agent swarms, persistent memory, self-learning hooks and an MCP server.
 npm run ruflo -- --version
 ```
 
+### Already initialized
+
+`ruflo init` has been run and its configuration is committed:
+
+| Path | What it is |
+| --- | --- |
+| `CLAUDE.md` | Swarm guidance loaded by Claude Code |
+| `.claude/` | 30 skills, 16 commands, 17 agents, hook helpers + `settings.json` |
+| `.claude-flow/config.yaml` | V3 runtime config (hierarchical-mesh, 15 agents, hybrid memory) |
+| `.mcp.json` | Registers the `claude-flow` MCP server (`npx ruflo@latest mcp start`) |
+| `.agents/skills/ruflo/SKILL.md` | Core skill for cross-agent discovery |
+
+Runtime state (`.swarm/`, `ruvector.db`, `.claude-flow/data|logs|sessions|metrics`)
+is gitignored and regenerates locally.
+
+Note: `.claude/settings.json` enables 7 Claude Code hook types for this project, so
+Claude Code sessions here run Ruflo's hook handler.
+
 ### Use it
 
 ```bash
-npm run ruflo:init      # scaffold Ruflo config in this directory
-npm run ruflo:status    # show system status
+npm run ruflo:status            # show system status
 npm run ruflo -- swarm --help
+npm run ruflo -- daemon start   # background workers (stop with: daemon stop)
+npm run ruflo:init -- --force   # re-scaffold config
 ```
 
 `npm run ruflo -- <command>` forwards any Ruflo command (`agent`, `swarm`, `memory`,

@@ -1,1 +1,20 @@
 node_modules/
+
+# Ruflo local secrets and runtime data
+.env
+.env.local
+.env.*.local
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+.claude-flow/neural/
+.claude-flow/metrics/
+.claude-flow/policy/
+.claude-flow/security/
+.claude-flow/daemon.pid
+.claude-flow/daemon-state.json
+.claude-flow/harness-active-policy.json
+.swarm/
+ruvector.db
+*.db-shm
+*.db-wal

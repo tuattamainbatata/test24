@@ -85,10 +85,49 @@ list.
 claude mcp add claude-flow -- npx ruflo@latest mcp start
 ```
 
-### Alternatives
+### Alternatives (Ruflo)
 
 - **Global CLI**: `npm install -g ruflo@latest && ruflo init wizard`
 - **One-off**: `npx ruflo@latest init wizard`
 - **Install script**: `curl -fsSL https://cdn.jsdelivr.net/gh/ruvnet/ruflo@main/scripts/install.sh | bash`
 
 See the [Ruflo repository](https://github.com/ruvnet/ruflo) for full documentation.
+
+## Agent Reach
+
+[Agent Reach](https://github.com/Panniantong/Agent-Reach) gives an AI agent read access
+to the internet — web pages, RSS, YouTube, GitHub, Reddit, Twitter/X, Bilibili,
+Xiaohongshu and more — behind one CLI. It is a *machine-level* tool, not a dependency of
+this project: by design it keeps all of its files outside the workspace, so nothing here
+imports it and `npm install` does not fetch it.
+
+Install it per machine (Python 3.10+):
+
+```bash
+pipx install https://github.com/Panniantong/agent-reach/archive/main.zip
+agent-reach install --env=auto            # read-only check, no changes
+agent-reach install --env=auto --system   # install/configure the base channels
+```
+
+If your Python is externally managed (PEP 668) and `pipx` is unavailable, use a venv:
+
+```bash
+python3 -m venv ~/.agent-reach-venv
+~/.agent-reach-venv/bin/pip install https://github.com/Panniantong/agent-reach/archive/main.zip
+```
+
+Where it puts things:
+
+| Path | What |
+| --- | --- |
+| `~/.agent-reach/` | Config and tokens (mode 600) |
+| `~/.claude/skills/agent-reach/` | The skill Claude Code loads |
+| `~/.config/yt-dlp/config` | `--js-runtimes node` for YouTube |
+
+`agent-reach doctor` reports which of the 15 channels are live. The base install covers
+web/RSS/YouTube/GitHub/Exa search; the rest need per-channel logins or cookies:
+
+```bash
+agent-reach install --system --channels=twitter,reddit,bilibili   # pick channels
+agent-reach uninstall                                             # remove everything
+```

@@ -35,3 +35,8 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full
 documentation.
+
+## Also in this repo
+
+- **[Caveman](CAVEMAN.md)** — token-compression layer for AI coding agents. CLI dependency
+  plus the Claude Code skills vendored into `.claude/skills/`.

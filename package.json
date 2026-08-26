@@ -4,9 +4,13 @@
   "private": true,
   "description": "Local setup for OmniRoute, an open-source AI gateway that aggregates 290+ AI providers behind a single OpenAI-compatible endpoint.",
   "scripts": {
-    "start": "omniroute"
+    "start": "omniroute",
+    "caveman": "caveman",
+    "caveman:setup": "caveman setup --install",
+    "caveman:learn": "caveman learn"
   },
   "dependencies": {
+    "@caveman-ai/cli": "^1.2.5",
     "omniroute": "^3.8.49"
   }
 }

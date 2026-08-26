@@ -2,11 +2,15 @@
   "name": "omniroute-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Local setup for OmniRoute, an open-source AI gateway that aggregates 290+ AI providers behind a single OpenAI-compatible endpoint.",
+  "description": "Local setup for OmniRoute, an open-source AI gateway that aggregates 290+ AI providers behind a single OpenAI-compatible endpoint, plus Ruflo, an AI agent orchestration platform.",
   "scripts": {
-    "start": "omniroute"
+    "start": "omniroute",
+    "ruflo": "ruflo",
+    "ruflo:init": "ruflo init",
+    "ruflo:status": "ruflo status"
   },
   "dependencies": {
-    "omniroute": "^3.8.49"
+    "omniroute": "^3.8.49",
+    "ruflo": "^3.38.20"
   }
 }

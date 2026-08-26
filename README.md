@@ -35,3 +35,41 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full
 documentation.
+
+## Ruflo
+
+This project also installs [Ruflo](https://github.com/ruvnet/ruflo) (npm package
+`ruflo`), an AI agent orchestration platform / meta-harness for Claude Code. It adds
+multi-agent swarms, persistent memory, self-learning hooks and an MCP server.
+
+`npm install` (above) pulls it in, so no extra step is needed. Verify it with:
+
+```bash
+npm run ruflo -- --version
+```
+
+### Use it
+
+```bash
+npm run ruflo:init      # scaffold Ruflo config in this directory
+npm run ruflo:status    # show system status
+npm run ruflo -- swarm --help
+```
+
+`npm run ruflo -- <command>` forwards any Ruflo command (`agent`, `swarm`, `memory`,
+`task`, `hive-mind`, `mcp`, `doctor`, ...). Run `npm run ruflo -- --help` for the full
+list.
+
+### Wire it into Claude Code
+
+```bash
+claude mcp add claude-flow -- npx ruflo@latest mcp start
+```
+
+### Alternatives
+
+- **Global CLI**: `npm install -g ruflo@latest && ruflo init wizard`
+- **One-off**: `npx ruflo@latest init wizard`
+- **Install script**: `curl -fsSL https://cdn.jsdelivr.net/gh/ruvnet/ruflo@main/scripts/install.sh | bash`
+
+See the [Ruflo repository](https://github.com/ruvnet/ruflo) for full documentation.

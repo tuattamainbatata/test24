@@ -4,7 +4,14 @@
   "private": true,
   "description": "Local setup for OmniRoute, an open-source AI gateway that aggregates 290+ AI providers behind a single OpenAI-compatible endpoint.",
   "scripts": {
-    "start": "omniroute"
+    "start": "omniroute",
+    "mem:install": "npx claude-mem install",
+    "mem:status": "npx claude-mem status",
+    "mem:start": "npx claude-mem start",
+    "mem:stop": "npx claude-mem stop",
+    "mem:doctor": "npx claude-mem doctor",
+    "mem:update": "npx claude-mem update",
+    "mem:uninstall": "npx claude-mem uninstall"
   },
   "dependencies": {
     "omniroute": "^3.8.49"

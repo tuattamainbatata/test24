@@ -35,3 +35,17 @@ This launches OmniRoute via its `omniroute` CLI. The dashboard is available at
 
 See the [upstream repository](https://github.com/diegosouzapw/OmniRoute) for full
 documentation.
+
+## Claude-Mem
+
+[Claude-Mem](https://github.com/thedotmack/claude-mem) is set up here too — a persistent memory
+compression system that carries context across Claude Code sessions.
+
+```bash
+npm run mem:install   # npx claude-mem install, then restart Claude Code
+npm run mem:status    # worker status
+npm run mem:doctor    # diagnose install/runtime health
+```
+
+See [docs/claude-mem.md](docs/claude-mem.md) for install alternatives, the full command list,
+configuration, and troubleshooting.

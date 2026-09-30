@@ -5,9 +5,16 @@
         "source": "github",
         "repo": "worldflowai/everything-claude-code"
       }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true
+    "everything-claude-code@everything-claude-code": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }

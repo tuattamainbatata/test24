@@ -1,0 +1,118 @@
+# Job Radar sources.
+# This environment's network policy blocks direct HTTP to every portal, so all fetching goes through the
+# Firecrawl connector, tested 2026-10-04:
+# - firecrawl_scrape with formats ["json"] and the jobs_schema below for portal/API URLs
+# - firecrawl_search with tbs "qdr:d" (last 24 hours) for the ATS sweep, the boards and the trade press
+# - The Indeed connector (search_jobs) for Indeed
+
+jobs_schema:
+  type: object
+  properties:
+    jobs:
+      type: array
+      items:
+        type: object
+        properties:
+          title: {type: string}
+          company: {type: string}
+          location: {type: string}
+          posted: {type: string}
+          url: {type: string}
+
+# Tier 1a: named company portals. {q} is substituted with each entry of portal_queries.
+portal_queries: ["creative director", "creative", "art director", "brand design"]
+portals:
+  - name: Amazon
+    group: tech
+    # Returns JSON. Job URL = https://www.amazon.jobs + job_path.
+    url: "https://www.amazon.jobs/en/search.json?base_query={q}&country=IND&result_limit=50&sort=recent"
+    verified: true
+  - name: Netflix
+    group: tech
+    # Eightfold API. Job URL = https://explore.jobs.netflix.net/careers/job/<id>
+    url: "https://explore.jobs.netflix.net/api/apply/v2/jobs?domain=netflix.com&query={q}&location=India&num=50&sort_by=new"
+    verified: true
+  - name: Google
+    group: tech
+    # Rendered HTML. Use the json format with jobs_schema.
+    url: "https://www.google.com/about/careers/applications/jobs/results/?q={q}&location=India&sort_by=date"
+    verified: true
+  - name: Meta
+    group: tech
+    url: "https://www.metacareers.com/jobs?q={q}&offices[0]=Mumbai%2C%20India&offices[1]=Bangalore%2C%20India&offices[2]=Gurgaon%2C%20India"
+  - name: Accenture Song
+    group: consultancy
+    url: "https://www.accenture.com/in-en/careers/jobsearch?jk={q}&jt=experienced%20professionals"
+    # On 2026-10-04 this page rendered no listings. The usual route is this search:
+    # site:accenture.com/in-en/careers/jobdetails ("Song" OR creative) (director OR lead OR head)
+    fallback_search: 'site:accenture.com/in-en/careers/jobdetails (Song OR creative) ("creative director" OR "creative lead" OR "head")' 
+  - name: Publicis Groupe (Publicis, Leo, BBH, Sapient)
+    group: network
+    url: "https://careers.publicisgroupe.com/jobs?keywords={q}&location=India"
+  - name: Publicis Sapient
+    group: consultancy
+    url: "https://careers.publicissapient.com/job-search?keywords={q}&location=India"
+  - name: Omnicom (TBWA, BBDO, DDB, McCann after IPG)
+    group: network
+    url: "https://www.omnicomgroup.com/careers/?search={q}&location=India"
+  - name: WPP (Ogilvy, VML, Grey)
+    group: network
+    url: "https://careers.wpp.com/jobs?keywords={q}&location=India"
+  - name: Dentsu
+    group: network
+    url: "https://dentsuaegis.wd3.myworkdayjobs.com/en-US/DAN_GLOBAL?q={q}&locationCountry=c4f78be1a8f14da0ab49ce1162348a5e"
+  - name: Havas
+    group: network
+    url: "https://www.havas.com/careers/?search={q}"
+  - name: Deloitte Digital
+    group: consultancy
+    url: "https://apply.deloitte.com/careers/SearchJobs/{q}?listFilterMode=1&3_12_3=India"
+
+# Boutique agencies have no portals. Watch their sites and hiring posts through search (Tier 2).
+boutiques: [Talented, "Tilt Brand Solutions", Moonshot, Schbang, "White Rivers Media", Kinnect, Enormous, Thinkstr, "Infectious Advertising", "Only Much Louder", "Lowe Lintas", "Leo India", "Wondrlab", "Dentsu Creative India"]
+
+# Tier 1b: ATS sweep. Each query runs as firecrawl_search with tbs "qdr:d" and limit 20.
+ats_domains:
+  - myworkdayjobs.com
+  - boards.greenhouse.io
+  - job-boards.greenhouse.io
+  - jobs.lever.co
+  - jobs.smartrecruiters.com
+  - jobs.ashbyhq.com
+  - oraclecloud.com
+  - taleo.net
+  - successfactors.com
+  - icims.com
+  - eightfold.ai
+  - darwinbox.in
+  - keka.com
+ats_query: 'site:{domain} ("Executive Creative Director" OR "Head of Creative" OR "Creative Director" OR "Creative Lead") (Mumbai OR Bengaluru OR Bangalore OR India OR Remote)'
+
+# Tier 2: job boards. Each runs as firecrawl_search with tbs "qdr:d".
+board_queries:
+  - 'site:glassdoor.co.in ("Executive Creative Director" OR "Creative Director") (Mumbai OR Bengaluru OR Bangalore)'
+  - 'site:glassdoor.com "Creative Director" India'
+  - 'site:naukri.com ("Executive Creative Director" OR "Creative Head" OR "Group Creative Director")'
+  - 'site:iimjobs.com ("Creative Director" OR "Creative Head")'
+  - 'site:foundit.in ("Executive Creative Director" OR "Creative Head")'
+  - 'site:instahyre.com "Creative Director"'
+  - 'site:cutshort.io "Creative Director"'
+  - 'site:wellfound.com "Creative" (Head OR Director OR Lead) India'
+  - '("we are hiring" OR "we''re hiring" OR "hiring") ("Executive Creative Director" OR "ECD" OR "Creative Head") (Mumbai OR Bengaluru) agency'
+indeed_searches:
+  - {search: "Executive Creative Director", location: "Mumbai, Maharashtra"}
+  - {search: "Creative Director", location: "Mumbai, Maharashtra"}
+  - {search: "Creative Director", location: "Bengaluru, Karnataka"}
+  - {search: "Head of Creative", location: "remote"}
+
+# Tier 3: signals that come before a posting. Each runs as firecrawl_search with tbs "qdr:d" and limit 15.
+signal_queries:
+  - '(afaqs OR exchange4media OR "campaign india" OR storyboard18 OR bestmediainfo) ("executive creative director" OR "chief creative officer" OR "national creative director" OR "creative head") (quits OR "moves on" OR exits OR "steps down" OR joins OR appoints OR elevated)'
+  - '(afaqs OR exchange4media OR "campaign india" OR storyboard18) ("creative mandate" OR "wins creative" OR "bags" OR "account win" OR "pitch win") agency'
+  - '(afaqs OR exchange4media OR "campaign india" OR storyboard18) agency ("Bengaluru office" OR "new office" OR "launches" OR "expands") creative'
+  - '(Netflix OR "Prime Video" OR Google OR YouTube OR Meta OR Amazon OR "Accenture Song") India ("creative head" OR "brand creative" OR "creative studio" OR "head of creative") (appoints OR hires OR exits OR launches)'
+
+# Location rules
+locations:
+  primary: [Mumbai, "Navi Mumbai", Thane, Bengaluru, Bangalore, "India Remote", Remote]
+  also_seen: [Dubai, "Abu Dhabi", UAE, Riyadh, Saudi, Doha, Qatar, MENA]

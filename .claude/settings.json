@@ -1,9 +1,9 @@
 {
   "extraKnownMarketplaces": {
-    "everything-claude-code": {
+    "ecc": {
       "source": {
         "source": "github",
-        "repo": "worldflowai/everything-claude-code"
+        "repo": "affaan-m/ECC"
       }
     },
     "ui-ux-pro-max-skill": {
@@ -14,7 +14,7 @@
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true,
+    "ecc@ecc": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }

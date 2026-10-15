@@ -45,10 +45,10 @@ folder gets them automatically:
 ```json
 {
   "extraKnownMarketplaces": {
-    "everything-claude-code": {
+    "ecc": {
       "source": {
         "source": "github",
-        "repo": "worldflowai/everything-claude-code"
+        "repo": "affaan-m/ECC"
       }
     },
     "ui-ux-pro-max-skill": {
@@ -59,7 +59,7 @@ folder gets them automatically:
     }
   },
   "enabledPlugins": {
-    "everything-claude-code@everything-claude-code": true,
+    "ecc@ecc": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }
@@ -68,28 +68,43 @@ folder gets them automatically:
 Equivalent manual install from inside Claude Code:
 
 ```
-/plugin marketplace add worldflowai/everything-claude-code
-/plugin install everything-claude-code@everything-claude-code
+/plugin marketplace add https://github.com/affaan-m/ECC
+/plugin install ecc@ecc
 
 /plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 /plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 ```
 
-### everything-claude-code
+### ecc
 
-[Repo](https://github.com/worldflowai/everything-claude-code) — general development
-workflow: agents, skills, commands, rules, and hooks.
+[Repo](https://github.com/affaan-m/ECC) — the ECC operator layer for general development
+work. Successor to (and superset of) `everything-claude-code`, which this repo used
+previously; do not enable both, since their agents, commands, and hooks collide.
 
 | Type | Items |
 |------|-------|
-| **Commands** | `/plan`, `/tdd`, `/verify`, `/code-review`, `/e2e`, `/eval`, `/learn`, `/orchestrate`, `/build-fix`, `/checkpoint`, `/refactor-clean`, `/test-coverage`, `/update-docs`, `/update-codemaps`, `/setup-pm` |
-| **Agents** | planner, architect, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner, refactor-cleaner, doc-updater |
-| **Skills** | coding-standards, backend-patterns, frontend-patterns, tdd-workflow, security-review, verification-loop, eval-harness, continuous-learning, strategic-compact, clickhouse-io |
-| **Rules** | coding-style, git-workflow, security, testing, performance, patterns, agents, hooks |
-| **Hooks** | SessionStart / SessionEnd / PreCompact / PreToolUse / PostToolUse / Stop automation (memory persistence, strategic compaction, continuous learning) |
+| **Agents** | 71, including planner, architect, code-architect, code-reviewer, security-reviewer, tdd-guide, build-error-resolver, e2e-runner, doc-updater, plus per-language reviewers and build resolvers |
+| **Skills** | 311, spanning backend/frontend patterns, TDD, security review, accessibility, agent harness construction, benchmarking, and per-stack guides |
+| **Commands** | 97, including `/code-review`, `/plan`, `/checkpoint`, `/build-fix`, `/feature-dev`, `/refactor-clean`, `/test-coverage`, `/update-docs`, the `epic-*` set, and per-language `*-build` / `*-review` / `*-test` commands |
+| **Hooks** | Lifecycle, quality, and safety automation (memory persistence among them), loaded from the plugin's own `hooks/hooks.json` |
 
-The plugin's hooks and scripts are Node.js based and detect the package manager from the
-project — this repo's `package-lock.json` resolves that to npm with no extra configuration.
+Two notes from ECC's docs:
+
+- **Don't layer installs.** The marketplace install above is complete on its own — don't
+  also run ECC's `install.sh`, and don't copy its hooks into `settings.json`. Claude Code
+  auto-loads a plugin's `hooks/hooks.json`, so duplicating them fires every hook twice.
+- **Rules aren't distributable via plugins.** ECC's rule packs (`common` plus per-language
+  packs for typescript, python, rust, go, react, and ~17 others) have to be copied by hand
+  if you want them:
+
+  ```bash
+  git clone https://github.com/affaan-m/ECC.git
+  mkdir -p ~/.claude/rules/ecc
+  cp -R ECC/rules/common ~/.claude/rules/ecc/
+  ```
+
+The plugin exposes `hooks_enabled` (default on) and `hook_profile` (`minimal` / `standard`
+/ `strict`, default `standard`) as user config, adjustable via `/plugin`.
 
 ### ui-ux-pro-max
 

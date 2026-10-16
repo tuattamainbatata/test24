@@ -1,0 +1,609 @@
+<title>Silk Ritual Storyboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: production storyboard sheet — header, world bible (her vs his), legend, then scene bands of 2-up panels. Single light "paper" look by choice. */
+:root{
+  --page:#E9E7EE; --paper:#FDFCFA; --ink:#2A2530; --ink2:#615A6B; --rule:#CFCAD8;
+  --silk:#4B1C7A; --silk2:#33115A;
+  --cool:#D3E1EE; --warm:#F4DDB9;
+  --brown:#A8754C; --tan:#D9BE96; --wood:#C79F76; --pine:#AFC3B5; --hedgew:#C9C58F;
+  --girl:#D8CBEA; --boy:#EDC66E; --hair:#2E2733; --skin:#FDFCFA;
+  --hyd:#B4BEE4; --boug:#E39BBF; --sky-c:#E6EEF5; --sky-w:#FBEBCB;
+  --cam:#C9442E; --act:#2C6DB0;
+  --display:"Young Serif",Georgia,serif; --body:"Work Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace; --hand:"Kalam","Comic Sans MS",cursive;
+  color-scheme:light;
+}
+body{background:var(--page);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,72px);line-height:1;color:var(--silk)}
+h2{font-size:28px}
+h3{font-size:19px}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:end}
+.hero > *{min-width:0}
+.hero .meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-family:var(--mono);font-size:13px;background:var(--paper);padding:18px 20px;border:1px solid var(--rule);margin:0}
+.hero .meta dt{color:var(--ink2)}
+.hero .meta dd{margin:0}
+.lede{font-size:18px;margin-top:16px}
+
+/* world bible */
+.worlds{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);background:var(--paper)}
+.worlds > div{padding:22px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.worlds .her{background:linear-gradient(var(--cool),var(--cool)) top/100% 6px no-repeat}
+.worlds .his{background:linear-gradient(var(--warm),var(--warm)) top/100% 6px no-repeat;border-left:1px solid var(--rule)}
+.sw{display:flex;gap:6px 14px;flex-wrap:wrap}
+.sw span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px}
+.sw i{width:14px;height:14px;border:1px solid var(--ink);display:inline-block}
+.tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);font-weight:500}
+td:first-child{font-family:var(--display)}
+td.c{background:color-mix(in srgb,var(--cool) 45%,transparent)}
+td.w{background:color-mix(in srgb,var(--warm) 45%,transparent)}
+tr:last-child td{border-bottom:0}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px 28px;font-family:var(--mono);font-size:12px;color:var(--ink2);align-items:center}
+.legend svg{vertical-align:middle;margin-right:6px}
+
+/* scenes */
+.scene{display:flex;flex-direction:column;gap:18px}
+.scene-head{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;border-top:2px solid var(--ink);padding-top:12px}
+.scene-head .sc{font-family:var(--mono);font-size:13px;color:var(--silk);font-weight:500}
+.scene-head p{color:var(--ink2);flex-basis:100%;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.shot{background:var(--paper);border:1px solid var(--rule);display:flex;flex-direction:column;min-width:0}
+.shot header{display:flex;align-items:center;gap:10px;padding:8px 12px;font-family:var(--mono);font-size:12px;border-bottom:1px solid var(--rule)}
+.shot .no{font-size:15px;font-weight:500}
+.chip{padding:1px 7px;border:1px solid var(--ink);font-size:11px;letter-spacing:.06em}
+.chip.her{background:var(--cool)}
+.chip.his{background:var(--warm)}
+.chip.both{background:linear-gradient(90deg,var(--cool) 50%,var(--warm) 50%)}
+.chip.pack{background:var(--silk);color:var(--paper);border-color:var(--silk)}
+.shot .tc{margin-left:auto;color:var(--ink2);font-variant-numeric:tabular-nums}
+.frame{display:block;width:100%;height:auto;aspect-ratio:16/9;max-width:100%;border-bottom:1px solid var(--rule)}
+.shot dl{margin:0;padding:12px 14px 14px;display:grid;grid-template-columns:64px 1fr;gap:6px 10px;font-size:14px}
+.shot dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);padding-top:2px}
+.shot dd{margin:0;min-width:0}
+.shot dd.vo{font-family:var(--hand);font-size:16px;color:var(--silk)}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.notes div{background:var(--paper);border:1px solid var(--rule);padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.notes p{font-size:14px}
+@media (max-width:820px){
+  .hero,.worlds,.grid,.notes{grid-template-columns:1fr}
+  .worlds .his{border-left:0;border-top:1px solid var(--rule)}
+}
+
+/* --- SVG sketch vocabulary --- */
+.ln{fill:none;stroke:var(--ink);stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+.lnb{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lnt{fill:none;stroke:var(--ink);stroke-width:.5;stroke-linecap:round;opacity:.7}
+.limb{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.leg{fill:none;stroke:var(--ink2);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.zip{fill:none;stroke:var(--paper);stroke-width:.7;stroke-dasharray:1.5 1.2}
+.pock{fill:none;stroke:var(--paper);stroke-width:.8;stroke-dasharray:2 1.5}
+[class^="f-"]{stroke:var(--ink);stroke-width:.85;stroke-linejoin:round}
+.f-brown{fill:var(--brown);fill-opacity:.6}
+.f-blk{fill:var(--hair)}
+.f-ink{fill:var(--ink);stroke:none}
+.f-paper{fill:var(--paper)}
+.f-pn{fill:var(--paper);stroke:none}
+.f-tan{fill:var(--tan)}
+.f-wood{fill:var(--wood);fill-opacity:.8}
+.f-pine{fill:var(--pine)}
+.f-hedgew{fill:var(--hedgew)}
+.f-girl{fill:var(--girl)}
+.f-boy{fill:var(--boy)}
+.f-hair{fill:var(--hair)}
+.f-skin{fill:var(--skin)}
+.f-silk{fill:var(--silk);stroke:var(--silk2)}
+.f-hyd{fill:var(--hyd)}
+.f-boug{fill:var(--boug);stroke-width:.4}
+.f-skyc{fill:var(--sky-c)}
+.f-skyw{fill:var(--sky-w)}
+.f-sun{fill:var(--boy);fill-opacity:.7}
+.f-snow{fill:var(--paper);stroke-width:.3}
+.f-foam{fill:var(--paper);stroke-width:.5}
+.f-hatch{fill:url(#hatch);stroke:none}
+.f-wallc{fill:var(--cool)}
+.f-wallw{fill:var(--warm)}
+.f-qc{fill:var(--girl);fill-opacity:.7}
+.f-qw{fill:var(--boy);fill-opacity:.7}
+.silktxt{fill:var(--paper);font-family:var(--hand);font-weight:700;font-style:italic}
+.wash-c{fill:var(--cool)} .wash-w{fill:var(--warm)} .wash-p{fill:var(--paper)}
+.cam{fill:none;stroke:var(--cam);stroke-width:1.4;stroke-linecap:round;marker-end:url(#ah-cam)}
+.act{fill:none;stroke:var(--act);stroke-width:1.3;stroke-linecap:round;stroke-dasharray:4 2.5;marker-end:url(#ah-act)}
+.guide{fill:none;stroke:var(--cam);stroke-width:.8;stroke-dasharray:5 3}
+.endframe{fill:none;stroke:var(--cam);stroke-width:1;stroke-dasharray:6 3}
+.bezel{fill:none;stroke:var(--hair);stroke-width:9}
+.seam{stroke:var(--ink);stroke-width:1.6}
+.hand{font-family:var(--hand);font-size:10px;fill:var(--ink)}
+.hand.b{fill:var(--act)} .hand.r{fill:var(--cam)} .hand.w{fill:var(--paper)}
+.lab{font-family:var(--mono);font-size:6.5px;letter-spacing:.06em;fill:var(--cam)}
+.ui{font-family:var(--body);font-size:7.5px;fill:var(--ink)}
+.bub-out{fill:var(--girl);stroke:none}
+.bub-in{fill:var(--rule);stroke:none}
+.bub-silk{fill:var(--silk);stroke:none}
+.ui.w{fill:var(--paper)}
+.super{font-family:var(--display);font-size:20px;fill:var(--paper)}
+.ghostfig *{fill:none !important;stroke:var(--act) !important;stroke-dasharray:3 2.5;stroke-width:1 !important}
+.ghost *{fill:none !important}
+.ghost text{display:none}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="pen" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="pen2" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.4" xChannelSelector="G" yChannelSelector="R"/>
+    </filter>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="3" height="3" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="3" style="stroke:var(--ink);stroke-width:.45;opacity:.55"/>
+    </pattern>
+    <marker id="ah-cam" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0L8,4L0,8Z" style="fill:var(--cam)"/>
+    </marker>
+    <marker id="ah-act" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0L8,4L0,8Z" style="fill:var(--act)"/>
+    </marker>
+  </defs>
+</svg>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Cadbury Dairy Milk Silk · Long Distance</div>
+      <h1>Ritual</h1>
+      <p class="lede">Two hostels in two cities, one sharing ritual. Every set-up in her world has a twin in his: the same shape, height and place in frame, dressed in a different climate. The match is what lets a tablet screen feel like a shared sofa, bench, window and bed.</p>
+    </div>
+    <dl class="meta">
+      <dt>Format</dt><dd>TVC / digital film, 16:9</dd>
+      <dt>Length</dt><dd id="runtime">—</dd>
+      <dt>Shots</dt><dd id="shotcount">—</dd>
+      <dt>Scenes</dt><dd>6 + packshot</dd>
+      <dt>Board</dt><dd>Pencil storyboard v1</dd>
+      <dt>Tag</dt><dd>Say it with Silk.</dd>
+    </dl>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:18px">
+    <div class="scene-head"><span class="sc">WORLD BIBLE</span><h2>Different worlds, matched shapes</h2>
+      <p>Her snow is written into the script (it falls outside her window), so her hostel sits in a cold hill town and his in a warm city. Silk purple is the only saturated colour in both worlds.</p></div>
+    <div class="worlds">
+      <div class="her">
+        <div class="eyebrow">Her world</div>
+        <h3>Hill-town hostel, cold</h3>
+        <p>Deodar pines, mist, hydrangeas, timber and wool. Lilac knitwear. Arched windows. Grade: cool blue-grey, soft overcast, moonlight at night.</p>
+        <div class="sw"><span><i style="background:var(--cool)"></i>wash</span><span><i style="background:var(--girl)"></i>her wardrobe</span><span><i style="background:var(--pine)"></i>pine</span><span><i style="background:var(--hyd)"></i>hydrangea</span></div>
+      </div>
+      <div class="his">
+        <div class="eyebrow">His world</div>
+        <h3>City hostel, warm</h3>
+        <p>Palms, bougainvillea, brick and painted metal, ceiling fan. Mustard tees. Square windows. Grade: warm amber, hard sun, lamp-lit at night.</p>
+        <div class="sw"><span><i style="background:var(--warm)"></i>wash</span><span><i style="background:var(--boy)"></i>his wardrobe</span><span><i style="background:var(--hedgew)"></i>hedge</span><span><i style="background:var(--boug)"></i>bougainvillea</span></div>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Matched object</th><th>Her version</th><th>His version</th><th>What must match</th></tr></thead>
+        <tbody>
+          <tr><td>Brown sofa</td><td class="c">Leather chesterfield, buttoned back, rolled arms, turned wooden legs</td><td class="w">Fabric 2-seater, split cushions, square arms, thin metal legs</td><td>Same brown, back-rail height, seat height and depth. Shot at the same lens and height so the lines join across the seam.</td></tr>
+          <tr><td>Black bag</td><td class="c">Black duffel on her sofa's right end</td><td class="w">Black duffel he pulls from behind his sofa</td><td>Same silhouette and size. It is the bridge object at the seam (Sh 11–12).</td></tr>
+          <tr><td>Wooden bench</td><td class="c">Rustic log bench under pines</td><td class="w">Slatted park bench with iron arm curls under a palm</td><td>Seat line, backrest height, hedge line behind at the same frame height.</td></tr>
+          <tr><td>Window seat</td><td class="c">Arched hostel window, real snow</td><td class="w">Square library window, sunshine, then shaving-foam "snow"</td><td>Glass area behind the head, cushion height, window frame-right.</td></tr>
+          <tr><td>White pillow</td><td class="c">White pillow, cable-knit lilac quilt, moonlight</td><td class="w">White pillow, checked mustard quilt, lamp light</td><td>Pillows meet at the split-screen seam to read as one bed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><svg width="34" height="10"><path class="cam" d="M2,5H26"/></svg>camera move</span>
+      <span><svg width="34" height="10"><path class="act" d="M2,5H26"/></svg>action / eyeline</span>
+      <span><svg width="34" height="10"><path class="guide" d="M2,5H32"/></svg>match line across worlds</span>
+      <span><svg width="34" height="12"><rect x="2" y="1" width="30" height="10" class="endframe"/></svg>end frame</span>
+      <span><svg width="22" height="14"><rect x="2" y="2" width="18" height="10" rx="2" class="bezel" style="stroke-width:3"/></svg>thick border = on a device screen</span>
+    </div>
+  </section>
+
+  <div id="board" style="display:flex;flex-direction:column;gap:48px"></div>
+
+  <section style="display:flex;flex-direction:column;gap:18px">
+    <div class="scene-head"><span class="sc">PRODUCTION</span><h2>Notes for the shoot</h2></div>
+    <div class="notes">
+      <div><h3>One camera recipe</h3><p>Every matched pair uses the same lens, camera height and tilt in both cities (35mm, about 1 m for seated set-ups). Shoot his plates first, then use a printed line overlay of his frame on her monitor.</p></div>
+      <div><h3>Screens in post</h3><p>All tablet and phone screens are composited. Shoot clean plates with tracking markers and keep the screens dark on set to avoid spill on faces.</p></div>
+      <div><h3>The foam gag</h3><p>Foam must read as snow on her screen, so backlight his window to make the foam glow white. Test on a spare pane first; the can is a hero prop with the label turned away.</p></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+/* ---------- primitives ---------- */
+let uid=0; const id=p=>p+(++uid);
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+const P=(d,c='ln')=>`<path class="${c}" d="${d}"/>`;
+const R=(x,y,w,h,c='ln',rx=0)=>`<rect class="${c}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/>`;
+const E=(x,y,rx,ry,c='ln')=>`<ellipse class="${c}" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"/>`;
+const C=(x,y,r,c='ln')=>E(x,y,r,r,c);
+const T=(x,y,s,c='hand',a='start',extra='')=>`<text class="${c}" x="${x}" y="${y}" text-anchor="${a}" ${extra}>${s}</text>`;
+const G=(t,inner)=>`<g transform="${t}">${inner}</g>`;
+function clipR(x,y,w,h,inner,rx=0){const k=id('c');return `<clipPath id="${k}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/></clipPath><g clip-path="url(#${k})">${inner}</g>`;}
+const half=(x0,inner)=>`<svg x="${x0}" y="0" width="160" height="180" viewBox="0 0 160 180">${inner}</svg>`;
+
+/* ---------- set pieces ---------- */
+function sofa(x,y,w,h,v){
+  const bh=h*.5, st=y+bh-4, sh=h*.28, ay=y+h*.24, ah=h*.62, ly=ay+ah; let s='';
+  s+=R(x,y,w,bh,'f-brown',v=='g'?9:3);
+  if(v=='g'){for(let r=0;r<2;r++)for(let i=1;i<9;i++){if(r&&i==8)continue;s+=C(x+i*w/9+(r?w/18:0),y+bh*(r?.62:.3),.75,'f-ink');}
+    for(let i=1;i<9;i++)s+=P(`M${x+i*w/9},${y+bh*.3}l${w/36},${bh*.32}`,'lnt');}
+  else s+=P(`M${x+w/2},${y+3}V${y+bh-3}M${x+4},${y+3}H${x+w-4}`,'lnt');
+  s+=R(x+3,st+sh,w-6,ly-1-(st+sh),'f-hatch');
+  s+=R(x+3,st,w-6,sh,'f-brown',3);
+  if(v=='b')s+=P(`M${x+w/2},${st+2}V${st+sh-1}`);
+  s+=R(x-7,ay,15,ah,'f-brown',v=='g'?7:2)+R(x+w-8,ay,15,ah,'f-brown',v=='g'?7:2);
+  if(v=='g')s+=P(`M${x-6},${ay+6}q7,-6 13,0M${x+w-7},${ay+6}q7,-6 13,0`);
+  const lh=h-(ly-y);
+  s+=v=='g'?P(`M${x-2},${ly}v${lh}M${x+w+2},${ly}v${lh}`,'lnb')+C(x-2,ly+lh*.5,1.2,'f-wood')+C(x+w+2,ly+lh*.5,1.2,'f-wood')
+          :P(`M${x-3},${ly}l-2,${lh}M${x+w+3},${ly}l2,${lh}`,'ln');
+  return s;
+}
+const bag=(x,y,w,h)=>P(`M${x+w*.28},${y+2}q${w*.22},-${h*.7} ${w*.44},0`,'lnb')+R(x,y,w,h,'f-blk',h*.45)+P(`M${x+w*.15},${y+h*.32}H${x+w*.85}`,'zip')+R(x+w*.08,y+h*.5,w*.22,h*.32,'pock',2);
+const suitcase=(x,y,w,h)=>P(`M${x},${y}l${w*.06},-${h*.95}h${w*.88}l${w*.06},${h*.95}Z`,'f-tan')+P(`M${x+w*.1},${y-h*.8}h${w*.8}`,'lnt')+R(x,y,w,h*.6,'f-tan',2)+P(`M${x+4},${y+2}q${w*.2},-6 ${w*.4},0t${w*.4},0`,'ln')+P(`M${x+6},${y+5}h${w*.5}`,'lnt');
+function win(x,y,w,h,shape,outside,sky){
+  const k=id('w');
+  const d=shape=='arch'?`M${x},${y+h}V${y+w/2}A${w/2},${w/2} 0 0 1 ${x+w},${y+w/2}V${y+h}Z`:`M${x},${y}h${w}v${h}h-${w}Z`;
+  return `<clipPath id="${k}"><path d="${d}"/></clipPath>`+P(d,sky||(shape=='arch'?'f-skyc':'f-skyw'))+`<g clip-path="url(#${k})">${outside}</g>`+P(d,'lnb')
+    +P(`M${x+w/2},${y+(shape=='arch'?2:0)}V${y+h}M${x},${y+h*.55}H${x+w}`,'ln')+P(`M${x-4},${y+h+1}h${w+8}`,'lnb');
+}
+const pine=(x,b,h)=>P(`M${x},${b-h}L${x-h*.26},${b-h*.45}H${x-h*.12}L${x-h*.34},${b-h*.1}H${x+h*.34}L${x+h*.12},${b-h*.45}H${x+h*.26}Z`,'f-pine')+P(`M${x},${b-h*.1}V${b}`);
+function palm(x,b,h){const tx=x+h*.15,ty=b-h;let s=P(`M${x},${b}Q${x-h*.06},${b-h*.5} ${tx},${ty}`,'lnb');
+  [[-1,.1],[-.8,-.3],[0,-.45],[.8,-.3],[1,.12],[.5,.32],[-.5,.32]].forEach(([dx,dy])=>{s+=P(`M${tx},${ty}q${dx*h*.25},${dy*h*.3-h*.12} ${dx*h*.45},${dy*h*.3+h*.12}`);});return s;}
+const hills=(y,x0=0,w=320)=>P(`M${x0},${y}Q${x0+w*.2},${y-18} ${x0+w*.4},${y-4}T${x0+w*.8},${y-8}T${x0+w*1.1},${y}`)+P(`M${x0},${y+8}Q${x0+w*.3},${y-4} ${x0+w*.6},${y+4}T${x0+w*1.1},${y+6}`,'lnt');
+const mist=(x,y,w)=>P(`M${x},${y}q${w*.25},-3 ${w*.5},0t${w*.5},0M${x+w*.2},${y+5}q${w*.2},-2 ${w*.4},0t${w*.4},0`,'lnt');
+const bush=(x,y,r,c='f-pine')=>P(`M${x-r},${y}a${r*.5},${r*.5} 0 0 1 ${r*.45},-${r*.6}a${r*.6},${r*.65} 0 0 1 ${r*1.1},0a${r*.5},${r*.5} 0 0 1 ${r*.45},${r*.6}Z`,c);
+function dots(x,y,w,h,n,c,r0=.8,r1=.8){let s='';for(let i=0;i<n;i++)s+=C((x+rnd()*w).toFixed(1),(y+rnd()*h).toFixed(1),(r0+rnd()*r1).toFixed(2),c);return s;}
+const snow=(x,y,w,h,n=60)=>dots(x,y,w,h,n,'f-snow',.6,1.1);
+function foam(x,y,r){return C(x,y,r,'f-foam')+C(x+r*.9,y+r*.2,r*.75,'f-foam')+C(x-r*.8,y+r*.3,r*.7,'f-foam')+C(x+r*.2,y-r*.6,r*.6,'f-foam');}
+const fan=(x,y)=>P(`M${x},0V${y}`)+E(x,y+2,34,2.6,'f-paper')+C(x,y+2,3.2,'f-paper');
+function bench(x,y,w,v,lh=28){let s='';
+  if(v=='g'){s+=R(x+6,y-16,6,16+lh,'f-wood',1)+R(x+w-12,y-16,6,16+lh,'f-wood',1);
+    s+=R(x,y-18,w,6,'f-wood',3)+P(`M${x+4},${y-15}h${w*.3}M${x+w*.5},${y-15}h${w*.3}`,'lnt');
+    s+=R(x-2,y,w+4,6,'f-wood',3)+P(`M${x+6},${y+3}h${w*.4}`,'lnt')+E(x-2,y+3,1.6,3,'f-wood')+E(x+w+2,y+3,1.6,3,'f-wood');}
+  else{s+=P(`M${x+6},${y-16}V${y+lh}M${x+w-6},${y-16}V${y+lh}`,'lnb');
+    s+=R(x,y-18,w,3,'f-wood',1)+R(x,y-12,w,3,'f-wood',1);
+    s+=R(x-2,y,w+4,2.6,'f-wood',1)+R(x-2,y+3.2,w+4,2.6,'f-wood',1);
+    s+=P(`M${x-1},${y}q-5,-6 0,-11q4,-2 4,2M${x+w+1},${y}q5,-6 0,-11q-4,-2 -4,2`,'lnb');}
+  return s;}
+const hand=(x,y,s=1,r=0)=>G(`translate(${x} ${y}) rotate(${r}) scale(${s})`,P('M-4,-3q0,-4 4,-4h3q3,0 3,3v5q0,3 -3,3h-4q-3,0 -3,-3Z','f-skin')+P('M-4,-1q-3.5,-2 -4.5,1.5','ln')+P('M0,-7v3M2.5,-7v3','lnt'));
+function silk(x,y,w,h,rot=0,o={}){let s='';
+  s+=`<rect class="f-silk" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" ${o.pack?'style="stroke:var(--paper);stroke-width:1.4"':''}/>`;
+  s+=P(`M${-w/2+w*.1},${-h/2+1}v${h-2}`,'pock');
+  s+=`<text class="silktxt" x="${w*.06}" y="${h*.2}" text-anchor="middle" font-size="${(h*.6).toFixed(1)}">Silk</text>`;
+  if(o.bite)s+=C(w/2+h*.05,-h*.18,h*.26,'f-pn')+C(w/2-h*.02,h*.2,h*.24,'f-pn');
+  return G(`translate(${x} ${y}) rotate(${rot})`,s);}
+function tab(x,y,w,h,inner,sky='wash-w'){return R(x,y,w,h,'f-blk',5)+clipR(x+3,y+3,w-6,h-6,R(x+3,y+3,w-6,h-6,sky)+inner,2);}
+const bezel=()=>R(4.5,4.5,311,171,'bezel',12);
+
+/* ---------- figures ---------- */
+const POSES={
+  sit:{h:[0,-31],sh:[0,-23],hip:[0,0],la:[[-9,-13],[-3,-9]],ra:[[9,-13],[3,-9]],ll:[[-6,4],[-6,20]],rl:[[6,4],[6,20]]},
+  sitSide:{h:[3,-31],sh:[0,-23],hip:[0,0],la:[[5,-12],[13,-13]],ra:[[7,-11],[14,-12]],ll:[[15,0],[15,18]],rl:[[16,1],[17,19]],face:'r'},
+  stand:{h:[0,-53],sh:[0,-45],hip:[0,-25],la:[[-9,-35],[-10,-25]],ra:[[9,-35],[10,-25]],ll:[[-3,-12],[-4,0]],rl:[[3,-12],[4,0]]},
+  walkBack:{h:[0,-53],sh:[0,-45],hip:[0,-25],la:[[-9,-35],[-8,-26]],ra:[[9,-35],[12,-27]],ll:[[-4,-12],[-7,0]],rl:[[3,-12],[5,-1]],face:'back'}
+};
+function head(x,y,r,g,face){let s='';
+  if(g=='f')s+=P(`M${x-r*1.15},${y+r*.2}Q${x-r*1.35},${y-r*1.5} ${x},${y-r*1.25}Q${x+r*1.35},${y-r*1.5} ${x+r*1.15},${y+r*.2}L${x+r*1.25},${y+r*2}Q${x},${y+r*1.6} ${x-r*1.25},${y+r*2}Z`,'f-hair');
+  if(face=='back')return s+C(x,y,r*1.05,'f-hair');
+  s+=C(x,y,r,'f-skin');
+  s+=g=='m'?P(`M${x-r*1.02},${y-r*.1}Q${x-r*1.05},${y-r*1.3} ${x},${y-r*1.2}Q${x+r*1.05},${y-r*1.3} ${x+r*1.02},${y-r*.1}Q${x+r*.3},${y-r*.8} ${x-r*1.02},${y-r*.1}Z`,'f-hair')
+           :P(`M${x-r},${y-r*.1}Q${x-r*.6},${y-r*1.25} ${x+r*.1},${y-r*1.05}Q${x+r*.9},${y-r*.9} ${x+r},${y}Q${x+r*.4},${y-r*.7} ${x-r*.1},${y-r*.75}Q${x-r*.6},${y-r*.6} ${x-r},${y-r*.1}Z`,'f-hair');
+  const dx=face=='r'?r*.3:face=='l'?-r*.3:0;
+  s+=C(x-r*.35+dx,y+r*.1,r*.11,'f-ink')+C(x+r*.35+dx,y+r*.1,r*.11,'f-ink')+P(`M${x-r*.2+dx},${y+r*.5}q${r*.2},${r*.18} ${r*.4},0`,'lnt');
+  return s;}
+function fig(x,y,s,g,pose,o={}){
+  const p=Object.assign({},POSES[pose],o.j||{}); const top=g=='f'?'f-girl':'f-boy';
+  const [hx,hy]=p.h,[sx,sy]=p.sh,[px,py]=p.hip; let q='';
+  [[p.ll,-3],[p.rl,3]].forEach(([l,d])=>{q+=P(`M${px+d},${py}L${l[0][0]},${l[0][1]}L${l[1][0]},${l[1][1]}`,'leg');});
+  q+=P(`M${sx-7},${sy}L${sx+7},${sy}L${px+6},${py}L${px-6},${py}Z`,top);
+  q+=head(hx,hy,6,g,o.face||p.face||'f');
+  [[p.la,-6],[p.ra,6]].forEach(([a,d])=>{q+=P(`M${sx+d},${sy+1}L${a[0][0]},${a[0][1]}L${a[1][0]},${a[1][1]}`,'limb')+C(a[1][0],a[1][1],1.7,'f-skin');});
+  const g2=`<g transform="translate(${x} ${y}) scale(${o.flip?-s:s} ${s})">${q}</g>`;
+  return o.ghost?`<g class="ghostfig">${g2}</g>`:g2;}
+function cu(x,y,r,g,expr='smile',look='c',rot=0){let s='';const top=g=='f'?'f-girl':'f-boy';
+  if(g=='f')s+=P(`M${x-r*.95},${y}Q${x-r*1.2},${y-r*1.3} ${x},${y-r*1.18}Q${x+r*1.2},${y-r*1.3} ${x+r*.95},${y}L${x+r*1.12},${y+r*1.55}L${x-r*1.12},${y+r*1.55}Z`,'f-hair');
+  s+=P(`M${x-r*2.2},${y+r*2.7}Q${x-r*2},${y+r*1.25} ${x-r*.5},${y+r*1.15}H${x+r*.5}Q${x+r*2},${y+r*1.25} ${x+r*2.2},${y+r*2.7}Z`,top);
+  s+=R(x-r*.28,y+r*.6,r*.56,r*.62,'f-skin');
+  s+=E(x-r*.78,y+r*.1,r*.11,r*.19,'f-skin')+E(x+r*.78,y+r*.1,r*.11,r*.19,'f-skin');
+  s+=E(x,y,r*.78,r,'f-skin');
+  s+=g=='m'?P(`M${x-r*.8},${y-r*.15}Q${x-r*.92},${y-r*1.18} ${x},${y-r*1.12}Q${x+r*.92},${y-r*1.18} ${x+r*.8},${y-r*.15}Q${x+r*.62},${y-r*.7} ${x},${y-r*.74}Q${x-r*.5},${y-r*.74} ${x-r*.8},${y-r*.15}Z`,'f-hair')
+           :P(`M${x-r*.82},${y+r*.15}Q${x-r*.82},${y-r*1.05} ${x+r*.1},${y-r*1.02}Q${x+r*.86},${y-r*.95} ${x+r*.82},${y+r*.15}Q${x+r*.62},${y-r*.6} ${x+r*.05},${y-r*.68}Q${x-r*.55},${y-r*.55} ${x-r*.82},${y+r*.15}Z`,'f-hair');
+  const lx=({l:-1,r:1}[look]||0)*r*.08, ly=({d:1,u:-1}[look]||0)*r*.06, ex=r*.32, ey=y-r*.02;
+  if(expr=='laugh')s+=P(`M${x-ex-r*.13},${ey+r*.02}q${r*.13},-${r*.13} ${r*.26},0M${x+ex-r*.13},${ey+r*.02}q${r*.13},-${r*.13} ${r*.26},0`);
+  else s+=E(x-ex,ey,r*.13,r*.09,'f-paper')+E(x+ex,ey,r*.13,r*.09,'f-paper')+C(x-ex+lx,ey+ly,r*.065,'f-ink')+C(x+ex+lx,ey+ly,r*.065,'f-ink');
+  const bh={wonder:r*.27,smile:r*.2,laugh:r*.22,open:r*.24}[expr]||r*.2;
+  if(expr=='sad')s+=P(`M${x-ex-r*.16},${ey-r*.15}L${x-ex+r*.13},${ey-r*.24}M${x+ex+r*.16},${ey-r*.15}L${x+ex-r*.13},${ey-r*.24}`);
+  else s+=P(`M${x-ex-r*.16},${ey-bh}q${r*.16},-${r*.1} ${r*.32},0M${x+ex-r*.16},${ey-bh}q${r*.16},-${r*.1} ${r*.32},0`);
+  s+=P(`M${x+r*.02},${y+r*.08}q-${r*.1},${r*.24} ${r*.06},${r*.28}`,'lnt');
+  const my=y+r*.55;
+  s+={sad:P(`M${x-r*.17},${my+r*.04}q${r*.17},-${r*.09} ${r*.34},0`),
+      smile:P(`M${x-r*.22},${my-r*.04}q${r*.22},${r*.18} ${r*.44},0`),
+      laugh:P(`M${x-r*.26},${my-r*.08}h${r*.52}q0,${r*.3} -${r*.26},${r*.3}q-${r*.26},0 -${r*.26},-${r*.3}Z`,'f-ink'),
+      wonder:E(x,my,r*.06,r*.08,'f-ink'),
+      open:E(x,my,r*.15,r*.13,'f-ink')}[expr];
+  return rot?G(`rotate(${rot} ${x} ${y})`,s):s;}
+function prof(x,y,r,g,dir=1,mouth='open'){const top=g=='f'?'f-girl':'f-boy';let s='';
+  if(g=='f')s+=P(`M${-r*.1},${-r*1.02}Q${-r*1.35},${-r*.95} ${-r*1.1},${r*.4}L${-r*1.25},${r*1.9}Q${-r*.6},${r*1.5} ${-r*.3},${r*.6}Z`,'f-hair');
+  s+=P(`M${-r*1.9},${r*2.6}Q${-r*1.6},${r*1.15} ${-r*.2},${r*1.08}Q${r*.95},${r*1.2} ${r*1.25},${r*2.6}Z`,top);
+  s+=R(-r*.35,r*.55,r*.55,r*.6,'f-skin');
+  s+=P(`M${-r*.82},${-r*.2}Q${-r*.82},${-r} 0,${-r}Q${r*.86},${-r} ${r*.86},${-r*.15}L${r*1.06},${r*.13}L${r*.86},${r*.24}Q${r*.9},${r*.36} ${r*.83},${r*.46}Q${r*.88},${r*.56} ${r*.76},${r*.66}Q${r*.6},${r*.96} ${r*.1},${r*.9}Q${-r*.62},${r*.8} ${-r*.82},${-r*.2}Z`,'f-skin');
+  s+=E(-r*.12,r*.02,r*.12,r*.19,'f-skin');
+  s+=P(`M${r*.42},${-r*.08}q${r*.1},-${r*.05} ${r*.2},0`)+P(`M${r*.38},${-r*.26}q${r*.14},-${r*.08} ${r*.3},0`);
+  s+=mouth=='open'?E(r*.8,r*.47,r*.09,r*.11,'f-ink'):P(`M${r*.62},${r*.5}q${r*.12},${r*.06} ${r*.2},-${r*.03}`);
+  s+=g=='m'?P(`M${-r*.84},${-r*.1}Q${-r*.95},${-r*1.15} ${r*.1},${-r*1.1}Q${r*.82},${-r*1.06} ${r*.88},${-r*.5}Q${r*.2},${-r*.75} ${-r*.3},${-r*.4}Q${-r*.6},${-r*.3} ${-r*.84},${-r*.1}Z`,'f-hair')
+           :P(`M${-r*.84},${r*.1}Q${-r*.95},${-r*1.15} ${r*.1},${-r*1.12}Q${r*.85},${-r*1.06} ${r*.9},${-r*.4}Q${r*.4},${-r*.75} ${-r*.2},${-r*.5}Q${-r*.6},${-r*.3} ${-r*.84},${r*.1}Z`,'f-hair');
+  return G(`translate(${x} ${y}) scale(${dir} 1)`,s);}
+const ghostfig=(x,y,s,g,pose,o={})=>fig(x,y,s,g,pose,Object.assign({ghost:true},o));
+
+/* ---------- rooms ---------- */
+function herRoom(){return P('M0,140H320')+P('M0,152H320M0,166H320','lnt')+E(160,158,72,9,'lnt')
+  +win(234,24,56,80,'arch',hills(78,234,60)+pine(248,104,30)+pine(276,104,22)+mist(236,82,52))
+  +R(18,28,40,28,'f-paper',1)+R(22,32,12,10,'f-skyc')+R(38,34,12,10,'f-girl')+R(26,44,12,9,'f-paper')
+  +P('M6,12Q80,24 160,12T318,14','lnt')+[30,70,110,150,190,230,270,300].map((x,i)=>C(x,14+((i%2)?5:2),1.3,'f-sun')).join('')
+  +sofa(56,78,136,62,'g');}
+function hisRoom(){return P('M0,140H320')+[40,100,160,220,280].map(x=>P(`M${x},140l${(x-160)*.18},40`,'lnt')).join('')+P('M0,156H320','lnt')
+  +win(234,26,56,74,'rect',C(276,40,8,'f-sun')+palm(250,104,52)+R(268,70,26,34,'f-tan'))
+  +R(20,26,30,40,'f-boy',1)+P('M24,34h22M24,40h18M24,46h22','lnt')
+  +fan(146,8)+sofa(56,78,136,62,'b');}
+function shelves(x,w){let s=R(x,0,w,180,'f-wood');for(let y=26;y<180;y+=32){s+=P(`M${x},${y}H${x+w}`,'lnb');let bx=x+3;while(bx<x+w-6){const bw=3+rnd()*4,bh2=14+rnd()*12;s+=R(bx.toFixed(1),(y-bh2).toFixed(1),bw.toFixed(1),bh2.toFixed(1),rnd()>.7?'f-boy':'f-paper',.5);bx+=bw+.6;}}return s;}
+
+/* ---------- panel ---------- */
+function panel(tone,content,overlay=''){
+  const wash=tone=='c'?R(0,0,320,180,'wash-c'):tone=='w'?R(0,0,320,180,'wash-w'):tone=='p'?R(0,0,320,180,'wash-p'):R(0,0,160,180,'wash-c')+R(160,0,160,180,'wash-w');
+  return `<svg class="frame" viewBox="0 0 320 180" role="img">${wash}<g class="ghost" filter="url(#pen2)" opacity=".3">${content}</g><g filter="url(#pen)">${content}</g>${overlay}</svg>`;}
+const seam=()=>`<line class="seam" x1="160" y1="0" x2="160" y2="180"/>`;
+function phoneUI(x,y,w,h,thumb){let s=R(x,y,w,h,'f-blk',9)+R(x+4,y+10,w-8,h-22,'f-paper',3)+C(x+14,y+20,5,'f-girl')+P(`M${x+4},${y+28}H${x+w-4}`,'lnt');
+  for(let r=0;r<3;r++)for(let i=0;i<7;i++)s+=R(x+7+i*((w-14)/7),y+h-46+r*9,(w-14)/7-1.5,6.5,'lnt',1);
+  return s+(thumb||'');}
+const thumb=()=>E(186,150,9,6,'f-skin')+P('M178,152q-8,10 -4,28','ln');
+
+/* ---------- shots ---------- */
+const SCENES=[
+ {sc:'SC 1',title:'Her hostel, hill town, evening',note:'Establish her world and the ache. Seed the brown sofa and the black bag.'},
+ {sc:'SC 2',title:'His hostel, warm city, same evening',note:'Same composition, different climate. The audience should feel the rhyme before they understand it.'},
+ {sc:'SC 3',title:'The call: one sofa',note:'The core trick. His re-framed shot completes her sofa.'},
+ {sc:'SC 4',title:'Gardens: one bench',note:'The ritual moves outdoors. This time she feeds him.'},
+ {sc:'SC 5',title:'Window seats: one snowfall',note:'Her world gets snow; he fakes it with shaving foam. The comic beat.'},
+ {sc:'SC 6',title:'Pillows: one bed, and the tag',note:'Quiet close. Split-screen pillows meet at the seam.'}
+];
+const SHOTS=[
+/* SC1 */
+{s:0,w:'her',size:'EWS',dur:2.5,
+ draw:()=>panel('c',herRoom()+suitcase(204,126,48,16)+bag(22,124,26,14)+bag(150,90,36,17)
+   +fig(92,114,1.15,'f','sit',{j:{la:[[-8,-12],[-1,-11]],ra:[[8,-12],[1,-11]]}})+R(88,99,7,9,'f-blk',1),
+   R(66,34,188,106,'endframe')+P('M10,10L60,30','cam')+P('M310,10L260,30','cam')+P('M10,170L60,144','cam')+P('M310,170L260,144','cam')+T(160,30,'SLOW PUSH-IN','lab','middle')),
+ a:'Her hostel room, just arrived. An open suitcase on the floor, a black duffel on the brown chesterfield. She sits curled at one end, phone in hand, missing him.',
+ c:'35mm at seated eye-height (1 m). Slow push-in. This lens and height is the recipe for every matched set-up.',
+ snd:'Soft piano motif. Wind against the window.'},
+{s:0,w:'her',size:'INSERT',dur:1.5,
+ draw:()=>panel('c',R(-10,20,340,180,'f-brown',18)+dots(10,40,300,120,26,'f-ink',.6,.3)+phoneUI(124,14,72,148,thumb()),
+   R(132,48,58,26,'bub-out',6)+T(186,59,'Reached?','ui','end')+T(186,69,'Missing you…','ui','end')+T(146,37,'♥','ui')),
+ a:'She types "Reached? Missing you…" and sends.',
+ c:'Macro insert, static. Chesterfield buttons soft behind.',
+ snd:'Key taps, send whoosh.'},
+{s:0,w:'her',size:'MCU',dur:1.5,
+ draw:()=>panel('c',R(-10,46,340,160,'f-brown',12)+dots(150,60,170,40,14,'f-ink',.6,.3)+cu(108,94,38,'f','sad','r'),
+   P('M146,86Q220,70 268,118','act')+T(268,140,'the empty half','hand b','middle')),
+ a:'She looks at the empty half of the sofa beside her.',
+ c:'85mm, shallow focus. Eyeline frame-right: the side he will "sit" on later.',
+ snd:'Piano holds one note.'},
+/* SC2 */
+{s:1,w:'his',size:'WS',dur:2,
+ draw:()=>panel('w',hisRoom()+bag(204,124,40,16)+bag(250,130,30,10)
+   +fig(92,114,1.15,'m','sit',{j:{la:[[-8,-12],[-1,-11]],ra:[[8,-12],[1,-11]]}})+R(88,99,7,9,'f-blk',1),
+   P('M100,92q6,-4 0,-8M104,94q10,-7 0,-14','guide')+T(110,82,'ping!','hand r')+T(150,70,'sofa end empty','hand b')+P('M160,74L168,94','act')),
+ a:'His room, same layout in a warmer world: brown fabric sofa, black bags on the floor, ceiling fan, palm outside. His phone pings; he reads her message.',
+ c:'Same 35mm, same height, same framing as Sh 01. The cut should feel like a matched dissolve.',
+ snd:'Message ping. Fan hum, distant traffic.'},
+{s:1,w:'his',size:'CU',dur:1.5,
+ draw:()=>panel('w',cu(62,34,26,'m','smile','r')+R(20,98,280,100,'f-blk',34)+P('M110,100q50,-40 100,0','lnb')
+   +P('M66,118Q160,100 254,118Q160,134 66,118Z','f-ink')+silk(172,74,96,28,-18)+hand(206,64,2.2,-18),
+   P('M246,112L258,46','act')+T(262,40,'pulls Silk','hand b')),
+ a:'He unzips his black bag and pulls out a Silk. A small smile: he has an idea.',
+ c:'Tilt up with the bar as it rises out of the bag.',
+ snd:'Zip, foil crinkle.'},
+{s:1,w:'his',size:'INSERT',dur:1.5,
+ draw:()=>panel('w',R(-10,20,170,180,'f-brown',4)+R(160,20,180,180,'f-brown',4)+phoneUI(124,14,72,148,thumb()),
+   R(130,48,58,22,'bub-in',6)+T(134,57,'Reached?','ui')+T(134,66,'Missing you…','ui')+R(136,78,54,14,'bub-silk',6)+T(186,88,'Want to Silk?','ui w','end')),
+ a:'He replies: "Want to Silk?"',
+ c:'Macro insert. Same framing as Sh 02 so the two inserts rhyme.',
+ snd:'Send whoosh.'},
+/* SC3 */
+{s:2,w:'her',size:'MCU',dur:1.5,
+ draw:()=>panel('c',R(-10,46,340,160,'f-brown',12)+dots(10,56,300,40,16,'f-ink',.6,.3)+cu(100,96,36,'f','wonder','d')+R(84,150,22,30,'f-blk',3)
+   +tab(196,96,108,68,C(250,124,9,'f-girl')+C(236,150,5,'f-pine')+C(264,150,5,'f-boug'),'wash-p'),
+   P('M190,92q-6,-8 0,-16M184,96q-10,-14 0,-28','guide')+P('M310,92q6,-8 0,-16M316,96q10,-14 0,-28','guide')+T(250,90,'VIDEO CALL','lab','middle')),
+ a:'She reads it, puzzled. The tablet on the cushion lights up: a video call from him.',
+ c:'85mm. Rack focus from her face to the tablet.',
+ snd:'Video-call ringtone.'},
+{s:2,w:'her',size:'OTS',dur:1.5,
+ draw:()=>panel('c',tab(110,26,196,122,R(90,76,240,90,'f-brown',3)+P('M208,80V148','lnt')+cu(206,100,34,'m','smile','c')+silk(256,58,56,18,-25)+hand(268,68,1.6))
+   +P('M-20,180Q-6,148 52,146Q114,148 132,180Z','f-girl')+C(52,112,46,'f-hair')+P('M18,96q20,-20 60,-6','lnt')+hand(112,134,2.2),
+   T(208,18,'his face on her tablet','hand','middle')),
+ a:'Over her shoulder: he is on screen, holding up a Silk with a grin.',
+ c:'OTS. Screen composited in post; shoot his plate first.',
+ snd:'Him, through the speaker: a laugh.'},
+{s:2,w:'her',size:'INSERT',dur:1.5,
+ draw:()=>panel('c',R(-10,-10,340,90,'f-brown',10)+dots(10,8,300,60,18,'f-ink',.6,.3)+R(30,70,260,112,'f-blk',40)+P('M120,72q40,-34 80,0','lnb')
+   +silk(150,94,92,26,-8)+P('M64,104H226V148Q145,158 64,148Z','f-blk')+P('M64,104H226','pock')+hand(80,108,2.3,-20),
+   T(250,30,'one for her too','hand','middle')+P('M222,36L190,80','act')),
+ a:'She glances at her own black bag: a Silk is peeking out of its side pocket. He slipped it in before they parted (implied, never explained).',
+ c:'High-angle insert. Purple is the only colour that pops.',
+ snd:'A small "ha!" from her.'},
+{s:2,w:'his',size:'SCREEN',dur:2,
+ draw:()=>panel('w',bag(150,42,50,24)+sofa(20,70,260,96,'b')
+   +fig(120,128,1.6,'m','sit',{j:{la:[[-10,-28],[-12,-44]],ra:[[16,-30],[25,-45]]}})+P('M100.8,57.6v-7','lnb'),
+   bezel()+T(84,40,'"1 min!"','hand r','middle')+P('M206,58Q252,70 236,108','act')+T(262,124,'bag lands here','hand b','middle')),
+ a:'On screen he holds up a finger: "1 min". He reaches behind his sofa, drops a black bag on the cushion and re-angles his camera.',
+ c:'His device POV. Handheld feel, settles into a lock-off as the frame matches.',
+ snd:'Shuffle, soft thump of the bag.'},
+{s:2,w:'both',size:'MATCH',dur:2,
+ draw:()=>panel('cw',half(0,P('M0,142H160')+sofa(16,70,190,72,'g')+bag(118,86,52,18)+fig(52,112,1.3,'f','sit'))
+   +half(160,P('M0,142H160')+sofa(-46,70,190,72,'b')+bag(-10,86,52,18)+fig(108,112,1.3,'m','sit')),
+   seam()+P('M0,70H320M0,102H320M0,142H320','guide')+T(4,66,'BACK RAIL','lab')+T(4,98,'SEAT','lab')+T(4,138,'FLOOR','lab')+T(160,64,'BAG = BRIDGE','lab','middle')+T(80,170,'HER PLATE','lab','middle')+T(240,170,'HIS PLATE','lab','middle')),
+ a:'The match: his re-framed shot lines up with her sofa. Back rail, seat and floor sit at the same heights, and the two black bags meet at the seam so they read as one bag on one sofa.',
+ c:'Design frame for both plates: 35mm, 1 m, same tilt. Match lines with a monitor overlay.',
+ snd:'Music lifts.'},
+{s:2,w:'her',size:'2-SHOT',dur:2.5,
+ draw:()=>panel('c',P('M0,144H320')+win(258,10,46,56,'arch',pine(270,66,24)+pine(292,66,18))+sofa(30,72,260,72,'g')
+   +fig(70,114,1.3,'f','sit',{j:{ra:[[16,-20],[30,-20]]},face:'r'})
+   +tab(110,58,120,76,R(100,72,140,36,'f-brown',3)+P('M170,75V106','lnt')+R(100,104,140,20,'f-brown',3)+P('M170,106V122')+bag(116,88,32,16)+fig(196,114,1.3,'m','sit')),
+   P('M30,72H110M230,72H290','guide')+P('M113,72H227','guide')+P('M33,104H290','guide')+T(170,160,'screen lines continue her sofa','hand r','middle')),
+ a:'She holds the tablet up against the empty end of her sofa. On screen his sofa continues hers, and he looks seated right there beside her.',
+ c:'Wide 2-shot, lock-off. Tablet screen comped; real and screen lines must join.',
+ snd:'Piano with soft strings.'},
+{s:2,w:'her',size:'POV',dur:1.5,
+ draw:()=>panel('c',sofa(-20,58,360,112,'g')+ghostfig(196,126,2,'m','sit')+R(10,154,130,40,'f-blk',5),
+   T(262,30,'he\'s not there','hand b','middle')+T(262,42,'(but almost)','hand b','middle')+P('M110,22L180,22','cam')+T(106,25,'DRIFT','lab','end')),
+ a:'She looks past the tablet at her sofa. The seat is empty. One beat of missing him.',
+ c:'Her POV, slow drift right onto the empty cushion.',
+ snd:'Music dips.'},
+{s:2,w:'his',size:'SCREEN',dur:1.5,
+ draw:()=>panel('w',R(-10,40,340,160,'f-brown',4)+P('M160,42V180','lnt')+cu(214,98,40,'m','smile','c')+silk(112,104,190,62,-12)+hand(176,124,3.2,-12),
+   bezel()+C(38,32,9,'endframe')+C(38,32,2,'f-ink')+T(52,35,'TO LENS','lab')),
+ a:'He pushes his Silk toward the lens, as if to feed her.',
+ c:'Wide lens on his device for an exaggerated reach. The bar breaks the frame.',
+ snd:'Him: "Aaa…"'},
+{s:2,w:'her',size:'2-SHOT',dur:2,
+ draw:()=>panel('c',R(-10,40,210,150,'f-brown',10)+dots(0,50,190,40,10,'f-ink',.6,.3)+prof(88,88,30,'f',1,'open')+silk(132,106,56,18,14)+hand(150,114,1.8,14)
+   +tab(186,44,126,84,R(160,40,180,100,'f-brown')+silk(240,88,120,40,-10)+hand(284,96,2.6,-10)),
+   P('M36,40Q64,26 96,36','act')+T(36,30,'leans in','hand b')+T(200,160,'bites as his bar fills the screen','hand r','middle')),
+ a:'She leans in, mouth open, and bites her own Silk in sync with his offer.',
+ c:'Profile 2-shot, her and the tablet. Time the bite to land as his bar fills his screen.',
+ snd:'Bite snap. She laughs.'},
+/* SC4 */
+{s:3,w:'her',size:'WS',dur:2,
+ draw:()=>panel('c',R(0,0,320,180,'f-wallc')+clipR(104,18,112,152,R(104,18,112,152,'f-skyc')+hills(80,100,130)+pine(126,122,40)+pine(206,118,50)+pine(116,130,22)+mist(110,92,100)
+   +bench(150,128,52,'g',24)+bush(122,152,14,'f-hyd')+bush(204,154,16,'f-hyd')+dots(112,140,22,8,6,'f-paper',.5,.4)+fig(160,168,1.5,'f','walkBack'))
+   +R(104,18,112,152,'lnb')+P('M104,18L70,8V178L104,170Z','f-wood')+P('M78,90h4','lnb')+P('M0,170H104M216,170H320','ln'),
+   P('M160,176L160,150','act')),
+ a:'She gets up, opens the door into her garden (pines, mist, hydrangeas) and walks out to a wooden log bench.',
+ c:'Doorway frame-in-frame, static. She walks away from camera.',
+ snd:'Door creak, cold breeze, birds.'},
+{s:3,w:'his',size:'WS',dur:1.5,
+ draw:()=>panel('w',R(0,0,320,180,'f-wallw')+clipR(104,18,112,152,R(104,18,112,152,'f-skyw')+C(188,40,10,'f-sun')+R(104,86,112,40,'f-tan')+P('M104,96H216M104,106H216M104,116H216','lnt')
+   +bush(124,92,18,'f-boug')+dots(108,70,40,20,10,'f-boug',.8,.6)+palm(204,140,62)+bench(150,128,52,'b',24)+bush(122,152,14,'f-hedgew')+bush(204,154,16,'f-hedgew')+fig(160,168,1.5,'m','walkBack'))
+   +R(104,18,112,152,'lnb')+P('M104,18L70,8V178L104,170Z','f-wood')+P('M78,90h4','lnb')+P('M0,170H104M216,170H320','ln'),
+   P('M160,176L160,150','act')+T(268,40,'match cut','hand r','middle')+T(268,52,'on the walk','hand r','middle')),
+ a:'He does the same: his door opens onto a courtyard (palms, bougainvillea) and a slatted wooden bench.',
+ c:'Identical doorway framing to Sh 16. Match cut on the walk.',
+ snd:'Warm birdsong, distant horns.'},
+{s:3,w:'both',size:'SPLIT',dur:2,
+ draw:()=>panel('cw',half(0,R(0,0,160,96,'f-skyc')+hills(60,0,160)+pine(30,96,44)+pine(130,96,36)+[10,40,70,100,130,160].map(x=>bush(x,98,16,'f-pine')).join('')+P('M0,142H160')
+   +bench(20,112,120,'g',30)+fig(80,114,1.4,'f','sit',{j:{la:[[-8,-14],[-2,-22]],ra:[[8,-14],[2,-22]]}})+R(74,76,12,8,'f-blk',1))
+   +half(160,R(0,0,160,96,'f-skyw')+C(130,24,10,'f-sun')+palm(28,96,60)+[10,40,70,100,130,160].map(x=>bush(x,98,16,'f-hedgew')).join('')+dots(0,82,160,12,14,'f-boug',.8,.5)+P('M0,142H160')
+   +bench(20,112,120,'b',30)+fig(80,114,1.4,'m','sit',{j:{la:[[-8,-14],[-2,-22]],ra:[[8,-14],[2,-22]]}})+R(74,76,12,8,'f-blk',1)),
+   seam()+P('M0,96H320M0,112H320','guide')+T(4,92,'HEDGE LINE','lab')+T(4,122,'SEAT','lab')),
+ a:'Split screen: both on their benches. Same seat height, hedge line and horizon. Two gardens that rhyme.',
+ c:'Same lens and height in both plates; hedge line held at the same frame height.',
+ snd:'Music builds.'},
+{s:3,w:'her',size:'MCU',dur:2,
+ draw:()=>panel('c',R(0,0,320,110,'f-skyc')+hills(70)+pine(30,110,50)+pine(280,108,40)+[0,40,80,120,160,200,240,280,320].map(x=>bush(x,112,20,'f-pine')).join('')
+   +cu(86,104,38,'f','smile','r')+silk(152,118,62,18,-28)+hand(166,128,2,-28)
+   +R(196,24,74,132,'f-blk',8)+clipR(200,32,66,116,R(200,32,66,116,'wash-w')+palm(214,90,40)+cu(234,96,26,'m','open','l'),2),
+   P('M176,104Q186,86 198,82','act')+T(234,172,'he takes a bite','hand b','middle')),
+ a:'Her turn. She holds her Silk to the phone camera; on screen he leans in and takes a bite.',
+ c:'Her MCU with the phone foreground right. His reaction lives on the screen.',
+ snd:'His bite, both laugh.'},
+/* SC5 */
+{s:4,w:'his',size:'WS',dur:2,
+ draw:()=>panel('w',shelves(0,176)+R(176,0,144,180,'f-wallw')+win(196,18,110,96,'rect',C(282,38,10,'f-sun')+palm(232,118,72)+R(262,76,40,40,'f-tan'))
+   +R(186,118,130,14,'f-brown',4)+R(186,132,130,48,'f-wood')+fig(238,124,1.35,'m','sitSide',{flip:true})+R(204,104,22,14,'f-blk',2),
+   P('M210,100L180,72','act')+R(110,54,70,26,'wash-p',3)+T(174,64,'her window:','hand b','end')+T(174,76,'snow begins','hand b','end')),
+ a:'Library. He sits on a window seat, sunlight outside. On his tablet she is at her own window seat, and it has just started snowing behind her.',
+ c:'Wide, 35mm. The tablet is small here; the snow is revealed in Sh 21.',
+ snd:'Library hush, a page turns.'},
+{s:4,w:'her',size:'SCREEN',dur:1.5,
+ draw:()=>panel('c',R(0,0,320,180,'f-wallc')+win(150,6,150,170,'arch',hills(110,150,150)+pine(180,176,60)+pine(270,176,70)+snow(150,6,150,170,70))
+   +R(0,150,320,30,'f-brown',3)+cu(106,100,40,'f','smile','r')+R(40,150,140,30,'f-qc',4),
+   bezel()+P('M150,60Q170,30 196,44','act')+T(120,28,'snow!','hand b','middle')),
+ a:'On his tablet: snow drifts down behind her. She turns to look, delighted.',
+ c:'Her plate. Real or practical snow outside the window.',
+ snd:'A soft chime in the score.'},
+{s:4,w:'his',size:'MCU',dur:1.5,
+ draw:()=>panel('w',shelves(0,320)+cu(118,98,38,'m','smile','l')+R(208,44,28,82,'f-paper',5)+R(214,32,16,14,'f-paper',2)+P('M208,62h28M208,100h28','lnb')
+   +`<text class="hand" x="222" y="86" text-anchor="middle" font-size="8">FOAM</text>`+hand(222,112,2.4),
+   P('M86,44H60','act')+P('M150,44H176','act')+R(54,12,128,16,'wash-p',3)+T(118,24,'checks for the librarian','hand b','middle')),
+ a:'He checks the room for the librarian, then fishes a can of shaving foam out of his bag.',
+ c:'MCU. Eyes dart left and right before the reveal.',
+ snd:'Can shake: clack-clack.'},
+{s:4,w:'his',size:'MS',dur:2,
+ draw:()=>{seed=21;let fo='';for(let i=0;i<14;i++)fo+=foam(56+rnd()*170,118+rnd()*30,3+rnd()*3);for(let i=0;i<10;i++)fo+=foam(50+rnd()*180,30+rnd()*80,1.4+rnd()*1.6);
+   return panel('w',R(0,0,320,180,'f-wallw')+win(40,14,240,140,'rect',C(250,40,12,'f-sun')+palm(110,156,100)+R(190,86,60,70,'f-tan'))+fo
+   +fig(240,206,2,'m','walkBack',{j:{ra:[[14,-58],[10,-72]],la:[[-10,-34],[-8,-24]]}})+R(254,42,12,22,'f-paper',3)+P('M254,44l-22,-8M254,46l-24,0M254,48l-22,8','lnt'),
+   P('M70,166Q140,150 210,166','act')+T(140,176,'sprays across the glass','hand b','middle'));},
+ a:'He sprays foam across the window glass behind him: drifts along the bottom, flakes above. It looks like snow.',
+ c:'Over his shoulder to the window. Let the foam fill the glass.',
+ snd:'Psssht. A distant "shh!"'},
+{s:4,w:'both',size:'SPLIT',dur:1.5,
+ draw:()=>{seed=33;let fo='';for(let i=0;i<10;i++)fo+=foam(rnd()*160,100+rnd()*40,2.5+rnd()*3);for(let i=0;i<10;i++)fo+=foam(rnd()*160,10+rnd()*80,1.3+rnd()*1.5);
+   return panel('cw',half(0,R(0,0,160,180,'f-skyc')+pine(30,180,80)+pine(130,180,90)+snow(0,0,160,180,50)+cu(80,104,40,'f','laugh','c'))
+   +half(160,R(0,0,160,180,'f-skyw')+palm(40,180,110)+fo+cu(80,104,36,'m','smile','c')),
+   seam()+T(80,20,'real snow','hand b','middle')+T(240,20,'foam snow','hand r','middle'));},
+ a:'On her screen, his window now "snows" too. She bursts out laughing.',
+ c:'Split: her laughing in front of real snow, him in front of foam snow.',
+ snd:'Her laugh, unguarded.'},
+{s:4,w:'his',size:'CU',dur:1.5,
+ draw:()=>{seed=40;let fo='';for(let i=0;i<14;i++)fo+=foam(rnd()*320,110+rnd()*60,3+rnd()*4);for(let i=0;i<14;i++)fo+=foam(rnd()*320,rnd()*100,1.5+rnd()*2);
+   return panel('w',R(0,0,320,180,'f-skyw')+P('M0,90H320M160,0V180','lnb')+fo+prof(140,92,36,'m',1,'closed')+silk(192,112,70,22,8,{bite:true})+hand(212,118,2.2,8),
+   T(270,30,'bite','hand r','middle'));},
+ a:'He takes a bite, very pleased with himself.',
+ c:'Profile CU against the foam-covered window.',
+ snd:'Bite snap.'},
+/* SC6 */
+{s:5,w:'both',size:'SPLIT',dur:3,
+ draw:()=>panel('cw',half(0,R(0,0,160,180,'f-wallc')+R(16,30,170,94,'f-paper',20)+P('M40,52q30,-8 60,0','lnt')+cu(92,88,32,'f','smile','r',-14)
+   +P('M-10,132Q60,118 170,128V190H-10Z','f-qc')+P('M10,150q10,-6 20,0t20,0t20,0t20,0M14,166q10,-6 20,0t20,0t20,0t20,0','lnt')+silk(132,118,40,13,-36,{bite:true})+hand(140,126,1.6,-36))
+   +half(160,R(0,0,160,180,'f-wallw')+R(-26,30,170,94,'f-paper',20)+P('M60,52q30,-8 60,0','lnt')+cu(68,88,32,'m','smile','l',14)
+   +P('M170,132Q100,118 -10,128V190H170Z','f-qw')+P('M20,140V190M60,136V190M100,134V190M140,136V190M-10,158H170','lnt')+silk(28,118,40,13,36,{bite:true})+hand(20,126,1.6,36)),
+   seam()+T(80,20,'moonlight','hand b','middle')+T(240,20,'lamp','hand r','middle')+R(70,168,180,10,'wash-p',2)+T(160,175.5,'PILLOWS MEET AT THE SEAM = ONE BED','lab','middle')),
+ a:'Night. Each lies on a white pillow, turned toward the seam. The pillows meet in the centre so it reads as one bed. Both smile and bite into their Silk.',
+ c:'Split screen, overhead 3/4. Her side moonlight-cool, his side lamp-warm.',
+ snd:'VO: "Say it with Silk."', vo:true},
+{s:5,w:'pack',size:'PACKSHOT',dur:2.5,
+ draw:()=>panel('p',R(0,0,320,180,'f-silk')+silk(160,80,180,56,-8,{pack:true})+P('M70,128q90,-10 180,0','pock'),
+   `<text class="super" x="160" y="158" text-anchor="middle">Say it with Silk.</text>`),
+ a:'Packshot. Silk bar on purple. Super: "Say it with Silk."',
+ c:'Static.',
+ snd:'Music resolves. VO tag.', vo:true}
+];
+
+/* ---------- render ---------- */
+const fmt=t=>{const m=Math.floor(t/60),s=(t%60);return `${m}:${s.toFixed(1).padStart(4,'0')}`;};
+let t=0;const board=document.getElementById('board');
+SCENES.forEach((sc,si)=>{
+  const sec=document.createElement('section');sec.className='scene';
+  sec.innerHTML=`<div class="scene-head"><span class="sc">${sc.sc}</span><h2>${sc.title}</h2><p>${sc.note}</p></div><div class="grid"></div>`;
+  const grid=sec.querySelector('.grid');
+  SHOTS.forEach((sh,i)=>{ if(sh.s!==si)return;
+    const n=String(i+1).padStart(2,'0'), tc=`${fmt(t)}–${fmt(t+sh.dur)}`; t+=sh.dur;
+    const wl={her:'HER',his:'HIS',both:'BOTH',pack:'END'}[sh.w];
+    const el=document.createElement('article');el.className='shot';
+    el.innerHTML=`<header><span class="no">SH ${n}</span><span class="chip ${sh.w}">${wl}</span><span>${sh.size}</span><span class="tc">${tc}</span></header>${sh.draw()}
+      <dl><dt>Action</dt><dd>${sh.a}</dd><dt>Camera</dt><dd>${sh.c}</dd><dt>Sound</dt><dd class="${sh.vo?'vo':''}">${sh.snd}</dd></dl>`;
+    grid.appendChild(el);
+  });
+  board.appendChild(sec);
+});
+document.getElementById('runtime').textContent=`≈${Math.round(t)}s assembly, trims to 45s`;
+document.getElementById('shotcount').textContent=SHOTS.length;
+})();
+</script>

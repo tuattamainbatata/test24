@@ -10,6 +10,7 @@ https://claude.ai/artifact/To2mfQ9xiNNQa6ETYNccmB
 | `score.py` | First-pass title/location filter, cross-source dedupe, provisional buckets |
 | `rate.md` | The JD review rubric: match score (0–100), résumé fit (0–10), tailoring edits |
 | `resume_snapshot.md` | Résumé text, used only if the live Google Doc can't be read |
+| `fetch.py` | Direct HTTPS fetcher for company portals (Amazon, Netflix, Google, Publicis, Workday tenants), Greenhouse/Lever boards and single JDs |
 | `seen.json` | Keys seeded from the setup run (the tracker's db is the live record) |
 
-Every fetch goes through the Firecrawl connector, because this cloud environment's network policy blocks direct requests to job sites. LinkedIn is never scraped.
+Since 2026-11-21 the radar needs no connectors. Portals are fetched directly from the "test24 – Job Radar" cloud environment, whose allowed hosts list the portal sites. The ATS sweep, job boards and trade press use the built-in web search. LinkedIn is never scraped. To add a portal, add its host to that environment and an entry to `sources.yaml`.

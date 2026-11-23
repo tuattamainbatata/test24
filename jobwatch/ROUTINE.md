@@ -21,7 +21,9 @@ Work through the steps below in order. End with the short summary in step 6, whi
    - Write the combined keys to `jobwatch/seen.json` as `{"keys": {key: {}}}`.
 
 ## 1. Collect candidates
-Keep only postings and stories from the **last 2 days**. On the first run after an outage, use the last 14 days.
+Keep only postings and stories from the **last 2 days**.
+
+**Look-back override:** if the run's extra text sets `LOOKBACK_DAYS=<n>`, use n days instead. That's Ganeysh's explicit request, so apply it as given and don't second-guess it from the run history. Keep only roles that are still open, and in step 3 rate up to 25 instead of 15.
 
 - **Tier 1a, company portals:** run `python3 jobwatch/fetch.py portals --out /tmp/portals.json`.
   - For each portal that reports ERR or 0 jobs and has a `fallback_search` in `sources.yaml`, run that query with WebSearch.

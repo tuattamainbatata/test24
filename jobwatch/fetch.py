@@ -137,7 +137,7 @@ def ad_google(p, q):
 def ad_generic(p, q):
     """Plain HTML: links whose text looks like a creative-leadership title."""
     url = p["url"].replace("{q}", urllib.parse.quote(q))
-    page = get(url, headers={"Accept": "text/html"})
+    page = get(url, headers={"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
     out = []
     for m in re.finditer(r'<a\b[^>]*href="([^"#]+)"[^>]*>(.*?)</a>', page, re.S | re.I):
         t = text_of(m.group(2))
